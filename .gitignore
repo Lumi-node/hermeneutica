@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Environment
+.env
+
+# Raw data sources (large, downloaded via ETL)
+data/raw/bible_databases/
+data/raw/strongs/
+data/raw/STEPBible-Data/
+data/raw/*.txt
+data/raw/*.gz
+
+# Ethics benchmark data (large CSVs)
+data/ethics/
+
+# Inspect AI logs
+results/logs/
+
+# Training data output (generated)
+training_data/*.jsonl
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp

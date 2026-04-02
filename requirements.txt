@@ -1,0 +1,18 @@
+# Database
+psycopg2-binary
+pgvector
+
+# ML / Embeddings
+sentence-transformers
+torch
+networkx
+
+# LLM evaluation (ABCD experiments)
+inspect-ai>=0.3.0
+anthropic
+openai
+
+# Analysis
+scipy
+tabulate
+datasets
