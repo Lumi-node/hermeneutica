@@ -13,11 +13,15 @@ venv/
 data/raw/bible_databases/
 data/raw/strongs/
 data/raw/STEPBible-Data/
+data/raw/MetaV/
 data/raw/*.txt
 data/raw/*.gz
 
-# Ethics benchmark data (large CSVs)
+# Ethics benchmark data (large CSVs, downloadable)
 data/ethics/
+
+# Control texts
+data/controls/
 
 # Inspect AI logs
 results/logs/
@@ -27,14 +31,18 @@ training/datasets/*.jsonl
 training/checkpoints/
 training/logs/
 
-# Old training_data folder
-training_data/
+# Unsloth cache
+unsloth_compiled_cache/
 
-# Experiment results (raw JSON can be large)
+# Experiment raw results (large JSON)
 experiments/*/results.json
 
 # Eval benchmark data
 eval/benchmarks/
+
+# Generated figures
+*.png
+*.svg
 
 # OS
 .DS_Store
@@ -44,5 +52,14 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
-data/raw/MetaV/
-unsloth_compiled_cache/
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Large model files
+*.safetensors
+*.bin
+*.pt
+*.gguf
