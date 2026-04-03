@@ -1,0 +1,32 @@
+{
+  "book": "Psalms",
+  "chapter": 56,
+  "raw_text": "1. Be merciful unto me, O God: for man would swallow me up; he fighting daily oppresseth me. 2. Mine enemies would daily swallow me up: for they be many that fight against me, O thou most High. 3. What time I am afraid, I will trust in thee. 4. In God I will praise his word, in God I have put my trust; I will not fear what flesh can do unto me. 5. Every day they wrest my words: all their thoughts are against me for evil. 6. They gather themselves together, they hide themselves, they mark my steps, when they wait for my soul. 7. Shall they escape by iniquity? in thine anger cast down the people, O God. 8. Thou tellest my wanderings: put thou my tears into thy bottle: are they not in thy book? 9. When I cry unto thee, then shall mine enemies turn back: this I know; for God is for me. 10. In God will I praise his word: in the Lord will I praise his word. 11. In God have I put my trust: I will not be afraid what man can do unto me. 12. Thy vows are upon me, O God: I will render praises unto thee. 13. For thou hast delivered my soul from death: wilt not thou deliver my feet from falling, that I may walk before God in the light of the living?",
+  "genre": "psalm_of_lament",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Trust",
+    "Fear_of_the_Lord",
+    "Protection",
+    "Faithfulness",
+    "Courage"
+  ],
+  "distilled_principles": [
+    "Transform fear into trust by consciously choosing faith over anxiety in threatening circumstances",
+    "God's intimate awareness of human suffering (counting tears, recording wanderings) provides comfort and validates the importance of individual pain",
+    "Confidence in divine protection enables moral courage to face human opposition without compromising integrity",
+    "Gratitude for past deliverance strengthens faith for present trials and future challenges"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.7,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.2
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage scores highest on virtue ethics (0.9) as it exemplifies and advocates for courage, faithfulness, and trust as character traits in adversity. Deontology (0.7) is significant because the psalmist emphasizes duty to fulfill vows and maintain trust despite circumstances. Justice (0.4) appears in the expectation that oppressors will face consequences, while utilitarian concerns are minimal.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:06:12.052772+00:00",
+  "schema_version": "1.0"
+}

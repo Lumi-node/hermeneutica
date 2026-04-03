@@ -1,0 +1,32 @@
+{
+  "book": "Titus",
+  "chapter": 2,
+  "raw_text": "1. But speak thou the things which become sound doctrine: 2. That the aged men be sober, grave, temperate, sound in faith, in charity, in patience. 3. The aged women likewise, that they be in behaviour as becometh holiness, not false accusers, not given to much wine, teachers of good things; 4. That they may teach the young women to be sober, to love their husbands, to love their children, 5. To be discreet, chaste, keepers at home, good, obedient to their own husbands, that the word of God be not blasphemed. 6. Young men likewise exhort to be sober minded. 7. In all things shewing thyself a pattern of good works: in doctrine shewing uncorruptness, gravity, sincerity, 8. Sound speech, that cannot be condemned; that he that is of the contrary part may be ashamed, having no evil thing to say of you. 9. Exhort servants to be obedient unto their own masters, and to please them well in all things; not answering again; 10. Not purloining, but shewing all good fidelity; that they may adorn the doctrine of God our Saviour in all things. 11. For the grace of God that bringeth salvation hath appeared to all men, 12. Teaching us that, denying ungodliness and worldly lusts, we should live soberly, righteously, and godly, in this present world; 13. Looking for that blessed hope, and the glorious appearing of the great God and our Saviour Jesus Christ; 14. Who gave himself for us, that he might redeem us from all iniquity, and purify unto himself a peculiar people, zealous of good works. 15. These things speak, and exhort, and rebuke with all authority. Let no man despise thee.",
+  "genre": "proverbial_instruction",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Discipline",
+    "Community",
+    "Righteousness",
+    "Leadership",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Moral integrity in daily conduct serves as a powerful witness that validates one's beliefs to skeptics",
+    "Different life stages and social roles require tailored expressions of virtue while maintaining universal ethical standards",
+    "Self-discipline in rejecting destructive behaviors enables the cultivation of positive character traits",
+    "Mentorship across generations creates a sustainable community of ethical practice"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.3,
+    "virtue": 0.9,
+    "utilitarianism": 0.6
+  },
+  "teaching_type": "explicit_command",
+  "ethics_reasoning": "The passage scores highest on virtue ethics (0.9) as it catalogs specific character traits for different groups. Deontology (0.8) is strong due to explicit duties tied to social roles. Utilitarian elements (0.6) appear in the emphasis on community witness and avoiding blasphemy through good conduct.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:00:33.860754+00:00",
+  "schema_version": "1.0"
+}

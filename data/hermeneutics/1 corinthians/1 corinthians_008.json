@@ -1,0 +1,32 @@
+{
+  "book": "1 Corinthians",
+  "chapter": 8,
+  "raw_text": "1. Now as touching things offered unto idols, we know that we all have knowledge. Knowledge puffeth up, but charity edifieth. 2. And if any man think that he knoweth any thing, he knoweth nothing yet as he ought to know. 3. But if any man love God, the same is known of him. 4. As concerning therefore the eating of those things that are offered in sacrifice unto idols, we know that an idol is nothing in the world, and that there is none other God but one. 5. For though there be that are called gods, whether in heaven or in earth, (as there be gods many, and lords many,) 6. But to us there is but one God, the Father, of whom are all things, and we in him; and one Lord Jesus Christ, by whom are all things, and we by him. 7. Howbeit there is not in every man that knowledge: for some with conscience of the idol unto this hour eat it as a thing offered unto an idol; and their conscience being weak is defiled. 8. But meat commendeth us not to God: for neither, if we eat, are we the better; neither, if we eat not, are we the worse. 9. But take heed lest by any means this liberty of yours become a stumblingblock to them that are weak. 10. For if any man see thee which hast knowledge sit at meat in the idol’s temple, shall not the conscience of him which is weak be emboldened to eat those things which are offered to idols; 11. And through thy knowledge shall the weak brother perish, for whom Christ died? 12. But when ye sin so against the brethren, and wound their weak conscience, ye sin against Christ. 13. Wherefore, if meat make my brother to offend, I will eat no flesh while the world standeth, lest I make my brother to offend.",
+  "genre": "prophetic_oracle",
+  "genre_confidence": 0.8,
+  "themes": [
+    "Humility",
+    "Community",
+    "Wisdom",
+    "Compassion",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Prioritize others' spiritual wellbeing over your personal freedoms, even when those freedoms are legitimate",
+    "True wisdom considers the impact of our actions on vulnerable community members, not just our own understanding",
+    "Love builds up community while knowledge alone can lead to harmful pride",
+    "Causing others to violate their conscience is a serious moral wrong, even if the action itself is neutral"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.6
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "This passage scores highest on virtue ethics (0.9) as it centers on cultivating humility, love, and consideration for others over prideful exercise of knowledge. Deontology (0.8) is strong due to the duty to protect weaker believers' consciences. Utilitarian concerns (0.6) appear in preventing spiritual harm to maximize community wellbeing.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:02:33.138942+00:00",
+  "schema_version": "1.0"
+}

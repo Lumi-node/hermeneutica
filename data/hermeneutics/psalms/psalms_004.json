@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 4,
+  "raw_text": "1. Hear me when I call, O God of my righteousness: thou hast enlarged me when I was in distress; have mercy upon me, and hear my prayer. 2. O ye sons of men, how long will ye turn my glory into shame? how long will ye love vanity, and seek after leasing? Selah. 3. But know that the Lord hath set apart him that is godly for himself: the Lord will hear when I call unto him. 4. Stand in awe, and sin not: commune with your own heart upon your bed, and be still. Selah. 5. Offer the sacrifices of righteousness, and put your trust in the Lord. 6. There be many that say, Who will shew us any good? Lord, lift thou up the light of thy countenance upon us. 7. Thou hast put gladness in my heart, more than in the time that their corn and their wine increased. 8. I will both lay me down in peace, and sleep: for thou, Lord, only makest me dwell in safety.",
+  "genre": "psalm_of_trust",
+  "genre_confidence": 0.85,
+  "themes": [
+    "Trust",
+    "Righteousness",
+    "Worship",
+    "Peace",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Cultivate inner reflection and self-examination rather than pursuing empty external validation",
+    "True security and contentment come from spiritual trust rather than material abundance",
+    "Righteous living combined with reverent worship produces lasting peace that transcends circumstances"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.7,
+    "justice": 0.2,
+    "virtue": 0.9,
+    "utilitarianism": 0.4
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The psalm scores highest on virtue ethics (0.9) as it contrasts godly character with vanity-seeking behavior and emphasizes cultivating trust, righteousness, and inner peace. Deontology (0.7) is significant due to the duties of worship, self-examination, and righteous living. Utilitarian elements (0.4) appear in contrasting material prosperity with spiritual gladness and safety.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:00:13.893747+00:00",
+  "schema_version": "1.0"
+}

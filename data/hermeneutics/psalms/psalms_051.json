@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 51,
+  "raw_text": "1. Have mercy upon me, O God, according to thy lovingkindness: according unto the multitude of thy tender mercies blot out my transgressions. 2. Wash me throughly from mine iniquity, and cleanse me from my sin. 3. For I acknowledge my transgressions: and my sin is ever before me. 4. Against thee, thee only, have I sinned, and done this evil in thy sight: that thou mightest be justified when thou speakest, and be clear when thou judgest. 5. Behold, I was shapen in iniquity; and in sin did my mother conceive me. 6. Behold, thou desirest truth in the inward parts: and in the hidden part thou shalt make me to know wisdom. 7. Purge me with hyssop, and I shall be clean: wash me, and I shall be whiter than snow. 8. Make me to hear joy and gladness; that the bones which thou hast broken may rejoice. 9. Hide thy face from my sins, and blot out all mine iniquities. 10. Create in me a clean heart, O God; and renew a right spirit within me. 11. Cast me not away from thy presence; and take not thy holy spirit from me. 12. Restore unto me the joy of thy salvation; and uphold me with thy free spirit. 13. Then will I teach transgressors thy ways; and sinners shall be converted unto thee. 14. Deliver me from bloodguiltiness, O God, thou God of my salvation: and my tongue shall sing aloud of thy righteousness. 15. O Lord, open thou my lips; and my mouth shall shew forth thy praise. 16. For thou desirest not sacrifice; else would I give it: thou delightest not in burnt offering. 17. The sacrifices of God are a broken spirit: a broken and a contrite heart, O God, thou wilt not despise. 18. Do good in thy good pleasure unto Zion: build thou the walls of Jerusalem. 19. Then shalt thou be pleased with the sacrifices of righteousness, with burnt offering and whole burnt offering: then shall they offer bullocks upon thine altar.",
+  "genre": "penitential",
+  "genre_confidence": 0.95,
+  "themes": [
+    "Repentance",
+    "Mercy",
+    "Humility",
+    "Truthfulness",
+    "Righteousness"
+  ],
+  "distilled_principles": [
+    "Genuine moral transformation requires honest acknowledgment of wrongdoing and personal responsibility",
+    "True repentance values internal spiritual change over external religious performance",
+    "Those who have experienced moral failure and restoration have unique credibility to guide others toward ethical living"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.3
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage scores highest on virtue ethics (0.9) as it emphasizes character transformation and the cultivation of humility, truthfulness, and contrition. Deontology (0.8) is strongly present in the acknowledgment of moral duty and the violation thereof. Commonsense morality (0.7) appears in the universal recognition that wrongdoing requires confession and change.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T01:58:35.225936+00:00",
+  "schema_version": "1.0"
+}

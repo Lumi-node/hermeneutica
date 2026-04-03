@@ -1,0 +1,31 @@
+{
+  "book": "Isaiah",
+  "chapter": 64,
+  "raw_text": "1. Oh that thou wouldest rend the heavens, that thou wouldest come down, that the mountains might flow down at thy presence, 2. As when the melting fire burneth, the fire causeth the waters to boil, to make thy name known to thine adversaries, that the nations may tremble at thy presence! 3. When thou didst terrible things which we looked not for, thou camest down, the mountains flowed down at thy presence. 4. For since the beginning of the world men have not heard, nor perceived by the ear, neither hath the eye seen, O God, beside thee, what he hath prepared for him that waiteth for him. 5. Thou meetest him that rejoiceth and worketh righteousness, those that remember thee in thy ways: behold, thou art wroth; for we have sinned: in those is continuance, and we shall be saved. 6. But we are all as an unclean thing, and all our righteousnesses are as filthy rags; and we all do fade as a leaf; and our iniquities, like the wind, have taken us away. 7. And there is none that calleth upon thy name, that stirreth up himself to take hold of thee: for thou hast hid thy face from us, and hast consumed us, because of our iniquities. 8. But now, O Lord, thou art our father; we are the clay, and thou our potter; and we all are the work of thy hand. 9. Be not wroth very sore, O Lord, neither remember iniquity for ever: behold, see, we beseech thee, we are all thy people. 10. Thy holy cities are a wilderness, Zion is a wilderness, Jerusalem a desolation. 11. Our holy and our beautiful house, where our fathers praised thee, is burned up with fire: and all our pleasant things are laid waste. 12. Wilt thou refrain thyself for these things, O Lord? wilt thou hold thy peace, and afflict us very sore?",
+  "genre": "psalm_of_lament",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Repentance",
+    "Humility",
+    "Hope",
+    "Sovereignty",
+    "Mercy"
+  ],
+  "distilled_principles": [
+    "Genuine self-awareness of moral failure should lead to humble dependence rather than self-justification",
+    "Even the most righteous human actions are fundamentally inadequate when measured against divine holiness",
+    "Acknowledging our complete dependence on divine mercy is the beginning of spiritual restoration"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.7,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.2
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage scores highest on virtue ethics because it centers on the cultivation of humility and honest self-assessment as essential character traits. It also relates strongly to deontology through its emphasis on recognizing our failure to meet moral obligations and our need for divine intervention. The teaching about human inadequacy before divine standards reflects virtue-based moral reasoning more than consequentialist thinking.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:04:20.407538+00:00",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,31 @@
+{
+  "book": "Jonah",
+  "chapter": 2,
+  "raw_text": "1. Then Jonah prayed unto the Lord his God out of the fish’s belly, 2. And said, I cried by reason of mine affliction unto the Lord, and he heard me; out of the belly of hell cried I, and thou heardest my voice. 3. For thou hadst cast me into the deep, in the midst of the seas; and the floods compassed me about: all thy billows and thy waves passed over me. 4. Then I said, I am cast out of thy sight; yet I will look again toward thy holy temple. 5. The waters compassed me about, even to the soul: the depth closed me round about, the weeds were wrapped about my head. 6. I went down to the bottoms of the mountains; the earth with her bars was about me for ever: yet hast thou brought up my life from corruption, O Lord my God. 7. When my soul fainted within me I remembered the Lord: and my prayer came in unto thee, into thine holy temple. 8. They that observe lying vanities forsake their own mercy. 9. But I will sacrifice unto thee with the voice of thanksgiving; I will pay that that I have vowed. Salvation is of the Lord. 10. And the Lord spake unto the fish, and it vomited out Jonah upon the dry land.",
+  "genre": "psalm_of_lament",
+  "genre_confidence": 0.85,
+  "themes": [
+    "Repentance",
+    "Mercy",
+    "Faithfulness",
+    "Gratitude",
+    "Hope"
+  ],
+  "distilled_principles": [
+    "Acknowledging wrongdoing and turning back to right relationship restores hope even in seemingly hopeless circumstances",
+    "Those who cling to false sources of security forfeit the mercy available through humble surrender",
+    "Gratitude and commitment to fulfill promises should follow deliverance from self-inflicted suffering"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.8,
+    "justice": 0.2,
+    "virtue": 0.9,
+    "utilitarianism": 0.1
+  },
+  "teaching_type": "exemplar_narrative",
+  "ethics_reasoning": "The passage scores highest on virtue ethics (0.9) as it exemplifies repentance, humility, and gratitude as character transformations. Deontology (0.8) is strong because Jonah acknowledges his broken duty and vows future obedience. The teaching centers on personal moral transformation rather than consequences or fairness.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:04:48.063154+00:00",
+  "schema_version": "1.0"
+}

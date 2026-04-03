@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 125,
+  "raw_text": "1. They that trust in the Lord shall be as mount Zion, which cannot be removed, but abideth for ever. 2. As the mountains are round about Jerusalem, so the Lord is round about his people from henceforth even for ever. 3. For the rod of the wicked shall not rest upon the lot of the righteous; lest the righteous put forth their hands unto iniquity. 4. Do good, O Lord, unto those that be good, and to them that are upright in their hearts. 5. As for such as turn aside unto their crooked ways, the Lord shall lead them forth with the workers of iniquity: but peace shall be upon Israel.",
+  "genre": "psalm_of_trust",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Trust",
+    "Protection",
+    "Righteousness",
+    "Justice",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Those who maintain trust in divine providence develop unshakeable stability in life's uncertainties",
+    "Moral integrity requires active resistance when faced with prolonged injustice or oppression",
+    "Choosing ethical compromise leads to association with and consequences of wrongdoing"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.7,
+    "virtue": 0.9,
+    "utilitarianism": 0.4
+  },
+  "teaching_type": "metaphorical_wisdom",
+  "ethics_reasoning": "The passage strongly emphasizes virtue ethics through its focus on character traits (trust, uprightness) and their consequences. Deontological elements appear in the implicit duty to resist wickedness and maintain righteousness. Justice concerns emerge in the contrast between the righteous and wicked's ultimate fates.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:06:31.656120+00:00",
+  "schema_version": "1.0"
+}

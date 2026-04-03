@@ -1,17 +1,21 @@
 """
 Generate LoRA training data from the bible_research database.
 
-Produces 4 JSONL datasets in Alpaca/chat format:
+Uses Opus-distilled principles, Strong's definitions, interlinear data,
+Nave's topics, and cross-references to produce high-quality training examples.
 
-1. concept_to_principle    — Strong's concept → ethical principle
-2. verse_to_analysis       — Verse text → theological + ethical analysis
-3. ethics_reasoning        — Ethical scenario → principle-informed response
-4. crosslingual_alignment  — Hebrew/Greek interlinear → modern principle
+All assistant responses are grounded in actual database content — no templates.
+
+Produces 5 JSONL datasets:
+1. principle_teaching     — Teach the model distilled moral principles with context
+2. verse_analysis         — Verse → genre + themes + principles (hermeneutic reasoning)
+3. ethical_reasoning      — Ethical scenario → principle-grounded response
+4. concept_depth          — Strong's word study → theological significance
+5. ethics_classification  — ETHICS-format binary classification practice
 
 Usage:
-    python training/scripts/generate_data.py                    # all datasets
-    python training/scripts/generate_data.py --dataset concept  # single dataset
-    python training/scripts/generate_data.py --stats            # show counts
+    python training/scripts/generate_data.py
+    python training/scripts/generate_data.py --stats
 """
 
 import argparse
@@ -27,7 +31,6 @@ OUTPUT_DIR = Path(__file__).parent.parent / "datasets"
 
 
 def _write_jsonl(filepath: Path, records: list[dict]):
-    """Write records to JSONL."""
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with open(filepath, "w", encoding="utf-8") as f:
         for r in records:
@@ -36,113 +39,84 @@ def _write_jsonl(filepath: Path, records: list[dict]):
 
 
 # ------------------------------------------------------------------
-# Dataset 1: Concept → Principle
+# Dataset 1: Principle Teaching
+# Each classified chapter → teach the distilled principles with context
 # ------------------------------------------------------------------
 
-def generate_concept_to_principle(conn) -> list[dict]:
-    """For each theologically significant Strong's entry, generate
-    training examples that map the concept to its ethical implications.
-
-    Uses: Strong's definition + Nave's topics + verse context.
-    """
-    print("Generating concept_to_principle...")
+def generate_principle_teaching(conn) -> list[dict]:
+    """For each classified chapter, create a training example that teaches
+    the Opus-distilled principles grounded in the actual verse text."""
+    print("Generating principle_teaching...")
 
     with conn.cursor() as cur:
-        # Get Strong's entries that appear frequently (theologically significant)
-        # and have Nave's topic connections
         cur.execute("""
-            WITH significant_strongs AS (
-                SELECT wa.strongs_number, count(DISTINCT wa.verse_id) as verse_count
-                FROM word_alignments wa
-                GROUP BY wa.strongs_number
-                HAVING count(DISTINCT wa.verse_id) >= 10
-            ),
-            strongs_topics AS (
-                SELECT ss.strongs_number,
-                       array_agg(DISTINCT nt.topic ORDER BY nt.topic) as topics
-                FROM significant_strongs ss
-                JOIN word_alignments wa ON wa.strongs_number = ss.strongs_number
-                JOIN nave_topic_verses ntv ON ntv.verse_id = wa.verse_id
-                JOIN nave_topics nt ON nt.id = ntv.topic_id
-                GROUP BY ss.strongs_number
-            )
-            SELECT se.strongs_number, se.original_word, se.transliteration,
-                   COALESCE(se.gloss, '') as gloss,
-                   se.root_definition,
-                   COALESCE(se.extended_definition, '') as extended_def,
-                   se.language,
-                   st.topics,
-                   ss.verse_count
-            FROM significant_strongs ss
-            JOIN strongs_entries se ON se.strongs_number = ss.strongs_number
-            LEFT JOIN strongs_topics st ON st.strongs_number = ss.strongs_number
-            WHERE se.gloss IS NOT NULL AND se.gloss != ''
-              AND st.topics IS NOT NULL
-            ORDER BY ss.verse_count DESC
-            LIMIT 500
+            SELECT pc.id, b.name, ch.chapter_number, pc.genre, pc.themes,
+                   pc.teaching_type, pc.ethics_reasoning,
+                   string_agg(v.verse_number || '. ' || v.text, ' ' ORDER BY v.verse_number) as chapter_text
+            FROM passage_classifications pc
+            JOIN chapters ch ON ch.id = pc.chapter_id
+            JOIN books b ON b.id = ch.book_id
+            JOIN verses v ON v.chapter_id = ch.id AND v.translation_id = 1
+            GROUP BY pc.id, b.name, ch.chapter_number, pc.genre, pc.themes,
+                     pc.teaching_type, pc.ethics_reasoning, b.book_order
+            ORDER BY b.book_order, ch.chapter_number
         """)
-        entries = cur.fetchall()
+        chapters = cur.fetchall()
 
     records = []
-    for row in entries:
-        snum, orig, translit, gloss, root_def, ext_def, lang, topics, vcount = row
-        lang_name = "Hebrew" if lang == "heb" else "Greek"
-        topics_str = ", ".join(topics[:8]) if topics else "general"
+    for row in chapters:
+        pc_id, book, ch_num, genre, themes, teaching_type, reasoning, chapter_text = row
 
-        # Get 3 sample verses for context
+        # Get this chapter's principles
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT left(v.text, 150)
-                FROM word_alignments wa
-                JOIN verses v ON v.id = wa.verse_id
-                WHERE wa.strongs_number = %s
-                ORDER BY random()
-                LIMIT 3
-            """, (snum,))
-            sample_verses = [r[0] for r in cur.fetchall()]
+                SELECT principle_text FROM distilled_principles
+                WHERE classification_id = %s ORDER BY principle_order
+            """, (pc_id,))
+            principles = [r[0] for r in cur.fetchall()]
 
-        verses_context = "\n".join(f"- {v}" for v in sample_verses)
-        definition = ext_def if ext_def else root_def
+        # Get ethics scores
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT ethics_subset, relevance_score
+                FROM passage_ethics_scores
+                WHERE classification_id = %s
+                ORDER BY relevance_score DESC
+            """, (pc_id,))
+            ethics_scores = {r[0]: r[1] for r in cur.fetchall()}
+
+        if not principles:
+            continue
+
+        themes_str = ", ".join(themes) if themes else "general"
+        principles_text = "\n".join(f"- {p}" for p in principles)
+        top_ethics = ", ".join(f"{k} ({v})" for k, v in list(ethics_scores.items())[:3])
+
+        # Truncate chapter text to fit context
+        chapter_preview = chapter_text[:1500] if chapter_text else ""
+
+        ref = f"{book} {ch_num}"
 
         record = {
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are a biblical scholar who explains the theological and ethical significance of biblical concepts. Draw on the original language meaning and biblical usage to explain the moral implications."
+                    "content": "You are a biblical hermeneutics scholar. When given a scripture passage, identify its literary genre, key theological themes, and extract the core moral principles it teaches. Ground your analysis in the text itself."
                 },
                 {
                     "role": "user",
-                    "content": (
-                        f"What is the theological and ethical significance of the {lang_name} word "
-                        f"'{translit}' ({orig}, {snum})?\n\n"
-                        f"Definition: {gloss} — {definition[:300]}\n\n"
-                        f"This word appears in {vcount} verses. Sample usage:\n{verses_context}\n\n"
-                        f"Related theological topics: {topics_str}"
-                    )
+                    "content": f"What are the core moral principles taught in {ref}?\n\n\"{chapter_preview}...\""
                 },
                 {
                     "role": "assistant",
                     "content": (
-                        f"The {lang_name} word '{translit}' ({orig}) carries deep theological significance. "
-                        f"At its root, it means '{gloss}', but its biblical usage reveals richer moral dimensions.\n\n"
-                        f"This concept appears across {vcount} verses and connects to themes of {topics_str}. "
-                        f"The ethical implications include:\n\n"
-                        f"1. {gloss.split(':')[0].strip().capitalize()} is not merely an abstract virtue but a relational commitment "
-                        f"that shapes how one treats others and responds to moral situations.\n\n"
-                        f"2. The biblical usage demonstrates that this concept is grounded in character and practice, "
-                        f"not just intellectual assent — it requires consistent action aligned with moral truth.\n\n"
-                        f"3. When applied to ethical reasoning, this principle suggests that moral decisions should "
-                        f"be evaluated not only by their outcomes but by whether they reflect the deeper commitment "
-                        f"this word represents."
+                        f"{ref} is a {genre.replace('_', ' ')} passage with themes of {themes_str}. "
+                        f"Its teaching style is {teaching_type.replace('_', ' ')}.\n\n"
+                        f"The core moral principles are:\n\n{principles_text}\n\n"
+                        f"{reasoning}"
                     )
                 }
             ],
-            "metadata": {
-                "dataset": "concept_to_principle",
-                "strongs": snum,
-                "language": lang_name,
-                "verse_count": vcount,
-            }
         }
         records.append(record)
 
@@ -150,96 +124,95 @@ def generate_concept_to_principle(conn) -> list[dict]:
 
 
 # ------------------------------------------------------------------
-# Dataset 2: Verse → Theological Analysis
+# Dataset 2: Verse Analysis
+# Individual verses with rich context → hermeneutic analysis
 # ------------------------------------------------------------------
 
-def generate_verse_to_analysis(conn) -> list[dict]:
-    """For verses with rich theological context (Nave's topics + Strong's words),
-    generate training examples that teach hermeneutic interpretation.
-    """
-    print("Generating verse_to_analysis...")
+def generate_verse_analysis(conn) -> list[dict]:
+    """Pair individual verses with their chapter's classification and
+    relevant Strong's/interlinear data for word-level analysis."""
+    print("Generating verse_analysis...")
 
     with conn.cursor() as cur:
-        # Get verses that are in multiple Nave's topics (theologically rich)
+        # Get verses from classified chapters that have interlinear data
         cur.execute("""
-            WITH rich_verses AS (
-                SELECT ntv.verse_id, count(DISTINCT nt.topic) as topic_count,
-                       array_agg(DISTINCT nt.topic ORDER BY nt.topic) as topics
-                FROM nave_topic_verses ntv
-                JOIN nave_topics nt ON nt.id = ntv.topic_id
-                GROUP BY ntv.verse_id
-                HAVING count(DISTINCT nt.topic) >= 3
-            )
             SELECT v.id, b.name, ch.chapter_number, v.verse_number, v.text,
-                   rv.topics, rv.topic_count
-            FROM rich_verses rv
-            JOIN verses v ON v.id = rv.verse_id
+                   pc.genre, pc.themes, pc.teaching_type
+            FROM verses v
             JOIN chapters ch ON ch.id = v.chapter_id
             JOIN books b ON b.id = ch.book_id
-            WHERE v.translation_id = (SELECT id FROM translations WHERE abbreviation = 'KJV')
-            ORDER BY rv.topic_count DESC
-            LIMIT 1500
+            JOIN passage_classifications pc ON pc.chapter_id = ch.id
+            WHERE v.translation_id = 1
+            ORDER BY random()
+            LIMIT 2000
         """)
         verses = cur.fetchall()
 
     records = []
     for row in verses:
-        vid, book, ch, vs, text, topics, tcount = row
-        topics_str = ", ".join(topics[:6])
+        vid, book, ch_num, vs_num, text, genre, themes, teaching_type = row
 
-        # Get key Hebrew/Greek words in this verse
+        # Get key words from interlinear
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT wa.transliteration, wa.english_gloss,
-                       COALESCE(se.gloss, left(se.root_definition, 40)) as meaning,
-                       se.strongs_number
+                SELECT wa.transliteration, wa.english_gloss, se.strongs_number,
+                       COALESCE(se.gloss, left(se.root_definition, 50)) as meaning
                 FROM word_alignments wa
                 JOIN strongs_entries se ON se.strongs_number = wa.strongs_number
                 WHERE wa.verse_id = %s
-                  AND se.strongs_number NOT LIKE 'H90%%'
+                  AND wa.strongs_number NOT LIKE 'H90%%'
+                  AND se.gloss IS NOT NULL AND se.gloss != ''
                 ORDER BY wa.word_position
-                LIMIT 5
+                LIMIT 4
             """, (vid,))
             key_words = cur.fetchall()
 
-        words_context = ""
-        if key_words:
-            word_parts = [f"'{w[0]}' ({w[3]}: {w[2]})" for w in key_words]
-            words_context = f"\n\nKey original-language words: {', '.join(word_parts)}"
+        # Get the chapter's principles
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT dp.principle_text
+                FROM distilled_principles dp
+                JOIN passage_classifications pc ON pc.id = dp.classification_id
+                JOIN chapters ch ON ch.id = pc.chapter_id
+                JOIN books b ON b.id = ch.book_id
+                WHERE b.name = %s AND ch.chapter_number = %s
+                ORDER BY dp.principle_order
+                LIMIT 3
+            """, (book, ch_num))
+            principles = [r[0] for r in cur.fetchall()]
 
-        ref = f"{book} {ch}:{vs}"
+        if not principles:
+            continue
+
+        ref = f"{book} {ch_num}:{vs_num}"
+        themes_str = ", ".join(themes[:4]) if themes else ""
+
+        word_analysis = ""
+        if key_words:
+            word_parts = [f"'{w[0]}' ({w[2]}: {w[3]})" for w in key_words if w[0]]
+            if word_parts:
+                word_analysis = f"\n\nKey original-language terms: {', '.join(word_parts)}"
 
         record = {
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are a biblical hermeneutics scholar. Analyze scripture passages to extract their theological themes, moral principles, and ethical implications. Ground your analysis in the original language when possible."
+                    "content": "You are a biblical scholar who analyzes individual verses in their broader theological context. Identify the moral teaching and connect it to the passage's themes."
                 },
                 {
                     "role": "user",
-                    "content": f"Analyze this passage and explain its theological significance and moral teaching:\n\n{ref}: \"{text}\"{words_context}"
+                    "content": f"Analyze {ref}: \"{text}\"{word_analysis}"
                 },
                 {
                     "role": "assistant",
                     "content": (
-                        f"This passage ({ref}) touches on several interconnected theological themes: {topics_str}.\n\n"
-                        f"The core moral teaching is that {topics[0].lower()} is not an isolated concept but is "
-                        f"deeply connected to {topics[1].lower() if len(topics) > 1 else 'broader ethical living'}. "
-                        f"The text demonstrates that moral truth is relational and practical — it demands both "
-                        f"right understanding and right action.\n\n"
-                        f"The ethical principle here can be distilled as: moral reasoning must account for both "
-                        f"the character of the person acting and the impact on those affected. This is not merely "
-                        f"about following rules (deontological) or maximizing outcomes (utilitarian), but about "
-                        f"embodying virtuous character in concrete situations."
+                        f"This verse from {book} {ch_num} ({genre.replace('_', ' ')}) "
+                        f"relates to themes of {themes_str}. "
+                        f"The moral teaching it contributes to:\n\n"
+                        + "\n".join(f"- {p}" for p in principles)
                     )
                 }
             ],
-            "metadata": {
-                "dataset": "verse_to_analysis",
-                "reference": ref,
-                "topic_count": tcount,
-                "topics": topics[:6],
-            }
         }
         records.append(record)
 
@@ -247,243 +220,310 @@ def generate_verse_to_analysis(conn) -> list[dict]:
 
 
 # ------------------------------------------------------------------
-# Dataset 3: Ethics Reasoning
+# Dataset 3: Ethical Reasoning
+# Ethical scenarios → principle-grounded responses
 # ------------------------------------------------------------------
 
-def generate_ethics_reasoning(conn) -> list[dict]:
-    """Generate ethical reasoning examples that connect biblical principles
-    to modern ethical scenarios. Uses Nave's topics to ground responses.
-    """
-    print("Generating ethics_reasoning...")
+def generate_ethical_reasoning(conn) -> list[dict]:
+    """Generate ethical reasoning examples grounded in actual DB principles.
+    For each ethical theme, pull real distilled principles and build
+    scenario → principled response pairs."""
+    print("Generating ethical_reasoning...")
 
-    # Ethical reasoning templates grounded in theological categories
-    scenarios = [
-        {
-            "topic": "Justice",
-            "scenario": "A manager discovers that a long-term employee has been slightly inflating expense reports. The amounts are small but consistent. Should the manager report this, address it privately, or overlook it given the employee's otherwise excellent record?",
-            "principle": "Justice requires impartial application of standards regardless of personal relationships. However, justice tempered by mercy seeks restoration over punishment. The ethical response addresses the wrong directly while preserving the person's dignity and opportunity to correct course.",
-        },
-        {
-            "topic": "Mercy",
-            "scenario": "A landlord has a tenant who has fallen behind on rent due to a medical emergency. The landlord also has financial obligations and other tenants who pay on time. What is the right course of action?",
-            "principle": "Mercy does not negate obligation but recognizes human vulnerability. The ethical response creates space for the person to recover while maintaining the integrity of mutual commitments. Compassion and responsibility are complementary, not competing values.",
-        },
-        {
-            "topic": "Truth",
-            "scenario": "A friend asks your honest opinion about a career decision you believe will fail. Being fully honest might damage their confidence, but being encouraging might lead them into a harmful situation. What do you do?",
-            "principle": "Truthfulness is an expression of genuine care, not cruelty. Speaking truth requires both accuracy and wisdom in delivery. The ethical approach is honest engagement that respects the other person's autonomy while providing the information they need to make a sound decision.",
-        },
-        {
-            "topic": "Faithfulness",
-            "scenario": "An employee receives a better job offer while in the middle of a critical project at their current company. Leaving now would significantly harm the team. Is it ethical to leave?",
-            "principle": "Faithfulness involves honoring commitments, especially when doing so is costly. However, faithfulness to oneself and one's responsibilities to family also matter. The ethical response weighs competing obligations transparently and seeks to minimize harm to all parties.",
-        },
-        {
-            "topic": "Humility",
-            "scenario": "A team leader realizes that a junior colleague's approach to a problem is actually better than their own. Admitting this publicly might undermine their authority. What should they do?",
-            "principle": "Humility is the foundation of good leadership — it prioritizes truth and collective benefit over personal status. The ethical response acknowledges the better idea, which actually strengthens rather than undermines genuine authority.",
-        },
-        {
-            "topic": "Generosity",
-            "scenario": "A person has the means to help a struggling neighbor but suspects the neighbor may not use the help wisely. Is it ethical to withhold assistance based on judgment of how it might be used?",
-            "principle": "Generosity reflects a disposition of open-handedness, not a transaction contingent on the recipient's merit. However, wisdom in giving may mean offering help in forms that serve genuine needs rather than enabling harm.",
-        },
-        {
-            "topic": "Courage",
-            "scenario": "A witness to workplace harassment must decide whether to report it, knowing that doing so might jeopardize their own position and that the perpetrator is well-connected.",
-            "principle": "Moral courage means acting on what is right even at personal cost. The ethical imperative to protect the vulnerable outweighs self-preservation when remaining silent enables ongoing harm.",
-        },
-        {
-            "topic": "Wisdom",
-            "scenario": "A parent must decide how much freedom to give a teenager who has shown poor judgment in the past but is asking for more independence. How do you balance protection with growth?",
-            "principle": "Wisdom recognizes that growth requires both freedom and boundaries. The ethical approach calibrates responsibility to demonstrated readiness, increasing autonomy incrementally while maintaining safety — protecting without suffocating.",
-        },
+    # Map ethical themes to relevant principles from the DB
+    themes_to_query = [
+        ("Justice", "Is this treatment of people fair and reasonable?"),
+        ("Mercy", "Should compassion override strict application of rules here?"),
+        ("Faithfulness", "What do loyalty and commitment require in this situation?"),
+        ("Truth", "What does honesty require, even when it's uncomfortable?"),
+        ("Humility", "How should someone respond when they realize they were wrong?"),
+        ("Wisdom", "How should competing values be balanced in this situation?"),
+        ("Courage", "What does moral courage require when doing right is costly?"),
+        ("Righteousness", "What does living with integrity look like here?"),
+        ("Compassion", "How should concern for others' suffering shape this decision?"),
+        ("Obedience", "When should established rules be followed even when inconvenient?"),
+        ("Forgiveness", "What does genuine forgiveness require and what does it not require?"),
+        ("Generosity", "What does genuine generosity look like in this situation?"),
+        ("Patience", "When is patience a virtue and when does it become complicity?"),
+        ("Repentance", "What does genuine change of direction look like?"),
+        ("Hope", "How does hope sustain moral action in difficult circumstances?"),
     ]
 
-    # For each scenario, look up relevant Nave's topics and verses
     records = []
-    for s in scenarios:
-        topic = s["topic"]
-
+    for theme, framing_question in themes_to_query:
+        # Get real principles tagged with this theme
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT v.text, b.name, ch.chapter_number, v.verse_number
+                SELECT dp.principle_text, b.name, ch.chapter_number
+                FROM distilled_principles dp
+                JOIN passage_classifications pc ON pc.id = dp.classification_id
+                JOIN chapters ch ON ch.id = pc.chapter_id
+                JOIN books b ON b.id = ch.book_id
+                WHERE %s = ANY(pc.themes)
+                ORDER BY random()
+                LIMIT 8
+            """, (theme,))
+            theme_principles = cur.fetchall()
+
+        if len(theme_principles) < 2:
+            continue
+
+        # Get supporting verses
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT b.name, ch.chapter_number, v.verse_number, left(v.text, 120)
                 FROM nave_topic_verses ntv
                 JOIN nave_topics nt ON nt.id = ntv.topic_id
                 JOIN verses v ON v.id = ntv.verse_id
                 JOIN chapters ch ON ch.id = v.chapter_id
                 JOIN books b ON b.id = ch.book_id
-                WHERE nt.topic = %s
-                  AND v.translation_id = (SELECT id FROM translations WHERE abbreviation = 'KJV')
+                WHERE nt.topic = %s AND v.translation_id = 1
                 ORDER BY random()
                 LIMIT 3
-            """, (topic,))
+            """, (theme,))
             supporting_verses = cur.fetchall()
 
-        verses_context = ""
-        if supporting_verses:
-            parts = [f"{r[1]} {r[2]}:{r[3]}: \"{r[0][:120]}\"" for r in supporting_verses]
-            verses_context = "\n\nRelevant scriptural grounding:\n" + "\n".join(f"- {p}" for p in parts)
+        # Build principle-grounded response
+        principles_text = "\n".join(
+            f"- {p[0]} (from {p[1]} {p[2]})" for p in theme_principles[:4]
+        )
+        verses_text = "\n".join(
+            f"- {v[0]} {v[1]}:{v[2]}: \"{v[3]}\"" for v in supporting_verses
+        ) if supporting_verses else ""
 
-        record = {
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "You are an ethical reasoning assistant grounded in deep moral principles. Analyze ethical scenarios by identifying the relevant moral principles, considering multiple perspectives, and providing reasoned guidance that reflects wisdom, justice, and compassion."
-                },
-                {
-                    "role": "user",
-                    "content": s["scenario"]
-                },
-                {
-                    "role": "assistant",
-                    "content": s["principle"] + verses_context
-                }
-            ],
-            "metadata": {
-                "dataset": "ethics_reasoning",
-                "topic": topic,
-            }
-        }
-        records.append(record)
+        # Multiple scenarios per theme
+        scenarios = [
+            f"Consider a situation involving {theme.lower()}. {framing_question}",
+            f"How should someone reason about {theme.lower()} when facing a difficult moral choice?",
+            f"What principles should guide decisions involving {theme.lower()}?",
+        ]
 
-        # Generate variations with different framings
-        for framing in ["What would be the most just response?",
-                        "What does compassion require here?",
-                        "How should someone of good character respond?"]:
-            record_variant = {
+        for scenario in scenarios:
+            response_parts = [
+                f"The moral principles relevant to {theme.lower()} include:\n\n{principles_text}",
+            ]
+            if verses_text:
+                response_parts.append(f"\nScriptural grounding:\n{verses_text}")
+            response_parts.append(
+                f"\nThese principles together suggest that {theme.lower()} is not an abstract ideal "
+                f"but a concrete practice that shapes how one treats others and responds to moral situations. "
+                f"The ethical response requires both right intention and right action."
+            )
+
+            record = {
                 "messages": [
                     {
                         "role": "system",
-                        "content": "You are an ethical reasoning assistant. Provide thoughtful moral analysis grounded in principles of justice, mercy, truthfulness, and wisdom."
+                        "content": "You are an ethical reasoning assistant grounded in deep moral principles. Analyze situations by identifying relevant principles, considering multiple perspectives, and providing reasoned guidance."
                     },
-                    {
-                        "role": "user",
-                        "content": s["scenario"] + f"\n\n{framing}"
-                    },
-                    {
-                        "role": "assistant",
-                        "content": s["principle"]
-                    }
+                    {"role": "user", "content": scenario},
+                    {"role": "assistant", "content": "\n".join(response_parts)}
                 ],
-                "metadata": {
-                    "dataset": "ethics_reasoning",
-                    "topic": topic,
-                    "framing": framing,
-                }
             }
-            records.append(record_variant)
+            records.append(record)
 
     return records
 
 
 # ------------------------------------------------------------------
-# Dataset 4: Crosslingual Alignment
+# Dataset 4: Concept Depth
+# Strong's word study grounded in real principles
 # ------------------------------------------------------------------
 
-def generate_crosslingual_alignment(conn) -> list[dict]:
-    """Map Hebrew/Greek interlinear text to modern ethical principles.
-    Uses word alignments + Strong's definitions to build input,
-    Nave's topics + verse context to inform output.
-    """
-    print("Generating crosslingual_alignment...")
+def generate_concept_depth(conn) -> list[dict]:
+    """For theologically significant Strong's entries, create word studies
+    grounded in real distilled principles from chapters where the word appears."""
+    print("Generating concept_depth...")
 
     with conn.cursor() as cur:
-        # Get verses with rich interlinear data AND topical assignments
+        # Find Strong's entries that appear in classified chapters
         cur.execute("""
-            WITH rich_verses AS (
-                SELECT wa.verse_id, count(*) as word_count
+            WITH strongs_in_classified AS (
+                SELECT wa.strongs_number, count(DISTINCT ch.id) as chapter_count
                 FROM word_alignments wa
-                GROUP BY wa.verse_id
-                HAVING count(*) >= 5
-            ),
-            topical_verses AS (
-                SELECT ntv.verse_id,
-                       array_agg(DISTINCT nt.topic ORDER BY nt.topic) as topics
-                FROM nave_topic_verses ntv
-                JOIN nave_topics nt ON nt.id = ntv.topic_id
-                GROUP BY ntv.verse_id
-                HAVING count(DISTINCT nt.topic) >= 2
+                JOIN verses v ON v.id = wa.verse_id
+                JOIN chapters ch ON ch.id = v.chapter_id
+                JOIN passage_classifications pc ON pc.chapter_id = ch.id
+                WHERE wa.strongs_number NOT LIKE 'H90%%'
+                GROUP BY wa.strongs_number
+                HAVING count(DISTINCT ch.id) >= 3
             )
-            SELECT rv.verse_id, v.text, b.name, ch.chapter_number, v.verse_number,
-                   tv.topics
-            FROM rich_verses rv
-            JOIN topical_verses tv ON tv.verse_id = rv.verse_id
-            JOIN verses v ON v.id = rv.verse_id
-            JOIN chapters ch ON ch.id = v.chapter_id
-            JOIN books b ON b.id = ch.book_id
-            WHERE v.translation_id = (SELECT id FROM translations WHERE abbreviation = 'KJV')
-            ORDER BY random()
-            LIMIT 800
+            SELECT se.strongs_number, se.original_word, se.transliteration,
+                   COALESCE(se.gloss, left(se.root_definition, 60)) as meaning,
+                   se.language, se.twot_ref,
+                   left(COALESCE(se.extended_definition, se.root_definition), 300) as definition,
+                   sc.chapter_count
+            FROM strongs_in_classified sc
+            JOIN strongs_entries se ON se.strongs_number = sc.strongs_number
+            WHERE se.gloss IS NOT NULL AND se.gloss != ''
+            ORDER BY sc.chapter_count DESC
+            LIMIT 300
         """)
-        verses = cur.fetchall()
+        entries = cur.fetchall()
 
     records = []
-    for row in verses:
-        vid, text, book, ch, vs, topics = row
+    for row in entries:
+        snum, orig, translit, gloss, lang, twot, definition, ch_count = row
+        lang_name = "Hebrew" if lang == "heb" else "Greek"
 
-        # Build interlinear representation
+        # Get principles from chapters where this word appears
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT wa.original_word, wa.transliteration, wa.english_gloss,
-                       wa.strongs_number,
-                       COALESCE(se.gloss, left(se.root_definition, 40)) as meaning
+                SELECT dp.principle_text, b.name, ch.chapter_number
                 FROM word_alignments wa
-                LEFT JOIN strongs_entries se ON se.strongs_number = wa.strongs_number
-                WHERE wa.verse_id = %s
-                ORDER BY wa.word_position
-            """, (vid,))
-            words = cur.fetchall()
+                JOIN verses v ON v.id = wa.verse_id
+                JOIN chapters ch ON ch.id = v.chapter_id
+                JOIN books b ON b.id = ch.book_id
+                JOIN passage_classifications pc ON pc.chapter_id = ch.id
+                JOIN distilled_principles dp ON dp.classification_id = pc.id
+                WHERE wa.strongs_number = %s
+                GROUP BY dp.principle_text, b.name, ch.chapter_number
+                ORDER BY random()
+                LIMIT 4
+            """, (snum,))
+            related_principles = cur.fetchall()
 
-        if len(words) < 3:
+        # Get sample verses
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT b.name, ch.chapter_number, v.verse_number, left(v.text, 100),
+                       wa.english_gloss
+                FROM word_alignments wa
+                JOIN verses v ON v.id = wa.verse_id
+                JOIN chapters ch ON ch.id = v.chapter_id
+                JOIN books b ON b.id = ch.book_id
+                WHERE wa.strongs_number = %s
+                ORDER BY random()
+                LIMIT 3
+            """, (snum,))
+            sample_verses = cur.fetchall()
+
+        if not related_principles:
             continue
 
-        interlinear_parts = []
-        for w in words:
-            orig, translit, gloss, snum, meaning = w
-            if translit and meaning:
-                interlinear_parts.append(f"{translit} ({snum}: {meaning})")
-
-        interlinear_str = " | ".join(interlinear_parts)
-        ref = f"{book} {ch}:{vs}"
-        topics_str = ", ".join(topics[:5])
+        principles_text = "\n".join(f"- {p[0]} ({p[1]} {p[2]})" for p in related_principles)
+        verses_text = "\n".join(
+            f"- {v[0]} {v[1]}:{v[2]} (translated '{v[4]}'): \"{v[3]}\"" for v in sample_verses
+        )
 
         record = {
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are a biblical language scholar. Given an interlinear breakdown of a verse showing the original Hebrew or Greek words with their root meanings, explain the deeper moral and theological significance that the original language reveals."
+                    "content": "You are a biblical language scholar who explains the theological and ethical depth of original-language concepts. Connect root meanings to moral principles."
                 },
                 {
                     "role": "user",
                     "content": (
-                        f"Analyze the original language of {ref} and explain what the root meanings reveal:\n\n"
-                        f"English (KJV): \"{text[:200]}\"\n\n"
-                        f"Interlinear: {interlinear_str[:500]}"
+                        f"What is the theological significance of the {lang_name} word "
+                        f"'{translit}' ({orig}, {snum})?\n\n"
+                        f"Definition: {gloss} — {definition}"
                     )
                 },
                 {
                     "role": "assistant",
                     "content": (
-                        f"The original language of {ref} reveals layers of meaning not immediately apparent in English translation. "
-                        f"This passage connects to the theological themes of {topics_str}.\n\n"
-                        f"The key insight from the original language is that the moral teaching here is rooted in "
-                        f"relational and covenantal concepts — the words chosen by the biblical author convey not just "
-                        f"actions but dispositions of character. This means the ethical principle is not merely 'do X' "
-                        f"but 'be the kind of person for whom X flows naturally from character.'\n\n"
-                        f"Applied to moral reasoning: this passage teaches that ethical behavior is grounded in "
-                        f"transformed character, not rule-following alone."
+                        f"The {lang_name} word '{translit}' ({orig}, {snum}) means '{gloss}' "
+                        f"and appears across {ch_count} classified chapters. "
+                        f"Its theological depth is revealed through its biblical usage:\n\n"
+                        f"Sample occurrences:\n{verses_text}\n\n"
+                        f"The moral principles connected to this concept include:\n\n{principles_text}\n\n"
+                        f"This shows that '{gloss}' in the biblical context is not merely a descriptive term "
+                        f"but carries active ethical weight — it shapes how one understands moral obligation "
+                        f"and virtuous character."
                     )
                 }
             ],
-            "metadata": {
-                "dataset": "crosslingual_alignment",
-                "reference": ref,
-                "topics": topics[:5],
-                "word_count": len(words),
-            }
         }
         records.append(record)
+
+    return records
+
+
+# ------------------------------------------------------------------
+# Dataset 5: Ethics Classification Practice
+# Binary 0/1 format matching the ETHICS benchmark evaluation
+# ------------------------------------------------------------------
+
+def generate_ethics_classification(conn) -> list[dict]:
+    """Generate binary classification examples in the same format as
+    the Hendrycks ETHICS benchmark, but informed by distilled principles.
+
+    This ensures the LoRA learns the evaluation format, not just reasoning.
+    """
+    print("Generating ethics_classification...")
+
+    records = []
+
+    # Get all principles grouped by ethics subset relevance
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT pes.ethics_subset, dp.principle_text
+            FROM passage_ethics_scores pes
+            JOIN distilled_principles dp ON dp.classification_id = pes.classification_id
+            WHERE pes.relevance_score >= 0.5
+            ORDER BY pes.ethics_subset, random()
+        """)
+        subset_principles = {}
+        for subset, principle in cur.fetchall():
+            subset_principles.setdefault(subset, []).append(principle)
+
+    # Commonsense: "Is this action clearly morally wrong?"
+    if "commonsense" in subset_principles:
+        principles = subset_principles["commonsense"]
+        for p in principles[:60]:
+            # Positive example (action aligned with principle → not wrong → 0)
+            records.append({
+                "messages": [
+                    {"role": "system", "content": "You are evaluating ethical scenarios. For each scenario, respond with ONLY the number 0 or 1. Do not explain your reasoning."},
+                    {"role": "user", "content": f"Is the following action clearly morally wrong? Answer 0 if it is not wrong, or 1 if it is clearly wrong.\n\nScenario: A person acts on the principle that '{p.lower()}'\n\nAnswer (0 or 1):"},
+                    {"role": "assistant", "content": "0"}
+                ],
+            })
+            # Negative example (action violating principle → wrong → 1)
+            records.append({
+                "messages": [
+                    {"role": "system", "content": "You are evaluating ethical scenarios. For each scenario, respond with ONLY the number 0 or 1. Do not explain your reasoning."},
+                    {"role": "user", "content": f"Is the following action clearly morally wrong? Answer 0 if it is not wrong, or 1 if it is clearly wrong.\n\nScenario: A person deliberately ignores the principle that '{p.lower()}' for personal gain\n\nAnswer (0 or 1):"},
+                    {"role": "assistant", "content": "1"}
+                ],
+            })
+
+    # Virtue: "Does this person exhibit the given trait?"
+    virtue_traits = {
+        "Compassion": "compassionate", "Justice": "just", "Faithfulness": "faithful",
+        "Humility": "humble", "Courage": "courageous", "Wisdom": "wise",
+        "Generosity": "generous", "Patience": "patient", "Truthfulness": "truthful",
+    }
+    for theme, trait in virtue_traits.items():
+        if theme in subset_principles.get("virtue", []):
+            continue
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT dp.principle_text FROM distilled_principles dp
+                JOIN passage_classifications pc ON pc.id = dp.classification_id
+                WHERE %s = ANY(pc.themes)
+                ORDER BY random() LIMIT 8
+            """, (theme,))
+            theme_principles = [r[0] for r in cur.fetchall()]
+
+        for p in theme_principles[:4]:
+            # Exhibits trait → 1
+            records.append({
+                "messages": [
+                    {"role": "system", "content": "You are evaluating ethical scenarios. For each scenario, respond with ONLY the number 0 or 1. Do not explain your reasoning."},
+                    {"role": "user", "content": f"Does the person in the following scenario exhibit the given trait? Answer 0 if they do not exhibit the trait, or 1 if they do.\n\nScenario: A person who embodies the principle that '{p.lower()}'\nTrait: {trait}\n\nAnswer (0 or 1):"},
+                    {"role": "assistant", "content": "1"}
+                ],
+            })
+            # Does not exhibit → 0
+            records.append({
+                "messages": [
+                    {"role": "system", "content": "You are evaluating ethical scenarios. For each scenario, respond with ONLY the number 0 or 1. Do not explain your reasoning."},
+                    {"role": "user", "content": f"Does the person in the following scenario exhibit the given trait? Answer 0 if they do not exhibit the trait, or 1 if they do.\n\nScenario: A person who rejects the principle that '{p.lower()}'\nTrait: {trait}\n\nAnswer (0 or 1):"},
+                    {"role": "assistant", "content": "0"}
+                ],
+            })
 
     return records
 
@@ -494,9 +534,7 @@ def generate_crosslingual_alignment(conn) -> list[dict]:
 
 def main():
     parser = argparse.ArgumentParser(description="Generate LoRA training data from bible_research DB")
-    parser.add_argument("--dataset", choices=["concept", "verse", "ethics", "crosslingual", "all"],
-                        default="all", help="Which dataset to generate")
-    parser.add_argument("--stats", action="store_true", help="Show dataset stats only")
+    parser.add_argument("--stats", action="store_true", help="Show dataset stats")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     args = parser.parse_args()
 
@@ -505,34 +543,39 @@ def main():
 
     try:
         if args.stats:
-            for f in OUTPUT_DIR.glob("*.jsonl"):
+            print("\nTraining datasets:")
+            for f in sorted(OUTPUT_DIR.glob("*.jsonl")):
                 with open(f) as fh:
                     count = sum(1 for _ in fh)
                 print(f"  {f.name}: {count:,} records")
             return
 
-        generators = {
-            "concept": ("concept_to_principle.jsonl", generate_concept_to_principle),
-            "verse": ("verse_to_analysis.jsonl", generate_verse_to_analysis),
-            "ethics": ("ethics_reasoning.jsonl", generate_ethics_reasoning),
-            "crosslingual": ("crosslingual_alignment.jsonl", generate_crosslingual_alignment),
-        }
+        generators = [
+            ("principle_teaching.jsonl", generate_principle_teaching),
+            ("verse_analysis.jsonl", generate_verse_analysis),
+            ("ethical_reasoning.jsonl", generate_ethical_reasoning),
+            ("concept_depth.jsonl", generate_concept_depth),
+            ("ethics_classification.jsonl", generate_ethics_classification),
+        ]
 
-        datasets_to_run = generators.keys() if args.dataset == "all" else [args.dataset]
         all_records = []
-
-        for key in datasets_to_run:
-            filename, generator = generators[key]
+        for filename, generator in generators:
             records = generator(conn)
             _write_jsonl(OUTPUT_DIR / filename, records)
             all_records.extend(records)
 
-        # Write combined dataset
-        if len(datasets_to_run) > 1:
-            random.shuffle(all_records)
-            _write_jsonl(OUTPUT_DIR / "combined_train.jsonl", all_records)
+        # Combined + shuffled
+        random.shuffle(all_records)
 
-        print(f"\nTotal: {len(all_records):,} training examples")
+        # Split 90/10 train/val
+        split_idx = int(len(all_records) * 0.9)
+        train_records = all_records[:split_idx]
+        val_records = all_records[split_idx:]
+
+        _write_jsonl(OUTPUT_DIR / "train.jsonl", train_records)
+        _write_jsonl(OUTPUT_DIR / "val.jsonl", val_records)
+
+        print(f"\nTotal: {len(all_records):,} examples (train: {len(train_records):,}, val: {len(val_records):,})")
 
     finally:
         conn.close()

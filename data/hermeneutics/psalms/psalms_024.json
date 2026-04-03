@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 24,
+  "raw_text": "1. The earth is the Lord’s, and the fulness thereof; the world, and they that dwell therein. 2. For he hath founded it upon the seas, and established it upon the floods. 3. Who shall ascend into the hill of the Lord? or who shall stand in his holy place? 4. He that hath clean hands, and a pure heart; who hath not lifted up his soul unto vanity, nor sworn deceitfully. 5. He shall receive the blessing from the Lord, and righteousness from the God of his salvation. 6. This is the generation of them that seek him, that seek thy face, O Jacob. Selah. 7. Lift up your heads, O ye gates; and be ye lift up, ye everlasting doors; and the King of glory shall come in. 8. Who is this King of glory? The Lord strong and mighty, the Lord mighty in battle. 9. Lift up your heads, O ye gates; even lift them up, ye everlasting doors; and the King of glory shall come in. 10. Who is this King of glory? The Lord of hosts, he is the King of glory. Selah.",
+  "genre": "enthronement",
+  "genre_confidence": 0.85,
+  "themes": [
+    "Sovereignty",
+    "Righteousness",
+    "Worship",
+    "Truthfulness",
+    "Creation_Care"
+  ],
+  "distilled_principles": [
+    "Recognizing divine sovereignty over creation should inspire ethical responsibility and reverent stewardship",
+    "Moral integrity in both action and intention is prerequisite for authentic spiritual communion",
+    "Truthfulness and sincerity in commitments form the foundation of righteous character"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.2
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage strongly emphasizes virtue ethics through its portrait of moral character (clean hands, pure heart, truthful speech) as prerequisites for divine encounter. Deontological elements appear in the implied duties of truthfulness and reverence toward the sovereign Creator. The commonsense moral intuitions about honesty and integrity are clearly present but embedded within the theological framework.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:06:04.091689+00:00",
+  "schema_version": "1.0"
+}

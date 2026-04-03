@@ -22,7 +22,7 @@ lora:
   bias: "none"
 
 training:
-  dataset: "training/datasets/combined_train.jsonl"
+  dataset: "training/datasets/train.jsonl"
   output_dir: "training/checkpoints/qwen3-4b-qlora-v1"
   num_train_epochs: 3
   per_device_train_batch_size: 4

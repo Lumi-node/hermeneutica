@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 99,
+  "raw_text": "1. The Lord reigneth; let the people tremble: he sitteth between the cherubims; let the earth be moved. 2. The Lord is great in Zion; and he is high above all the people. 3. Let them praise thy great and terrible name; for it is holy. 4. The king’s strength also loveth judgment; thou dost establish equity, thou executest judgment and righteousness in Jacob. 5. Exalt ye the Lord our God, and worship at his footstool; for he is holy. 6. Moses and Aaron among his priests, and Samuel among them that call upon his name; they called upon the Lord, and he answered them. 7. He spake unto them in the cloudy pillar: they kept his testimonies, and the ordinance that he gave them. 8. Thou answeredst them, O Lord our God: thou wast a God that forgavest them, though thou tookest vengeance of their inventions. 9. Exalt the Lord our God, and worship at his holy hill; for the Lord our God is holy.",
+  "genre": "enthronement",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Sovereignty",
+    "Justice",
+    "Worship",
+    "Righteousness",
+    "Mercy"
+  ],
+  "distilled_principles": [
+    "True authority combines power with moral integrity - legitimate leadership must be rooted in justice and equity",
+    "Reverent acknowledgment of transcendent holiness should shape human conduct and worship",
+    "Divine justice includes both merciful forgiveness and accountability for wrongdoing"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.8,
+    "justice": 0.9,
+    "virtue": 0.7,
+    "utilitarianism": 0.2
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage scores highest on justice (0.9) because it explicitly connects divine sovereignty with establishing equity and executing righteousness. Deontology (0.8) is strong due to the emphasis on worship as duty and keeping testimonies/ordinances. Virtue ethics (0.7) appears in the exemplars of Moses, Aaron, and Samuel who model faithful calling upon God.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:06:22.976913+00:00",
+  "schema_version": "1.0"
+}

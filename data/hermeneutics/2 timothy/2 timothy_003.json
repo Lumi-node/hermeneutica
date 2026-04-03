@@ -1,0 +1,33 @@
+{
+  "book": "2 Timothy",
+  "chapter": 3,
+  "raw_text": "1. This know also, that in the last days perilous times shall come. 2. For men shall be lovers of their own selves, covetous, boasters, proud, blasphemers, disobedient to parents, unthankful, unholy, 3. Without natural affection, trucebreakers, false accusers, incontinent, fierce, despisers of those that are good, 4. Traitors, heady, highminded, lovers of pleasures more than lovers of God; 5. Having a form of godliness, but denying the power thereof: from such turn away. 6. For of this sort are they which creep into houses, and lead captive silly women laden with sins, led away with divers lusts, 7. Ever learning, and never able to come to the knowledge of the truth. 8. Now as Jannes and Jambres withstood Moses, so do these also resist the truth: men of corrupt minds, reprobate concerning the faith. 9. But they shall proceed no further: for their folly shall be manifest unto all men, as theirs also was. 10. But thou hast fully known my doctrine, manner of life, purpose, faith, longsuffering, charity, patience, 11. Persecutions, afflictions, which came unto me at Antioch, at Iconium, at Lystra; what persecutions I endured: but out of them all the Lord delivered me. 12. Yea, and all that will live godly in Christ Jesus shall suffer persecution. 13. But evil men and seducers shall wax worse and worse, deceiving, and being deceived. 14. But continue thou in the things which thou hast learned and hast been assured of, knowing of whom thou hast learned them; 15. And that from a child thou hast known the holy scriptures, which are able to make thee wise unto salvation through faith which is in Christ Jesus. 16. All scripture is given by inspiration of God, and is profitable for doctrine, for reproof, for correction, for instruction in righteousness: 17. That the man of God may be perfect, throughly furnished unto all good works.",
+  "genre": "prophetic_oracle",
+  "genre_confidence": 0.8,
+  "themes": [
+    "Faithfulness",
+    "Wisdom",
+    "Righteousness",
+    "Discipline",
+    "Truthfulness"
+  ],
+  "distilled_principles": [
+    "Moral character deteriorates when self-love displaces love for God and others",
+    "Religious appearance without genuine transformation enables exploitation and deception",
+    "Persecution is an expected consequence of living according to moral principles",
+    "Sustained moral formation requires grounding in authoritative wisdom traditions",
+    "Truth-seeking must move beyond intellectual accumulation to transformative understanding"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.3
+  },
+  "teaching_type": "explicit_command",
+  "ethics_reasoning": "This passage scores highest on virtue ethics (0.9) as it provides an extensive catalog of vices versus virtues, contrasting corrupt character with Paul's exemplary life. Deontology rates high (0.8) due to explicit commands about duty to scripture and moral instruction. The vice list reflects commonsense morality (0.7) about obviously wrong behaviors.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T01:59:03.088538+00:00",
+  "schema_version": "1.0"
+}

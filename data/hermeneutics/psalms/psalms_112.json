@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 112,
+  "raw_text": "1. Praise ye the Lord. Blessed is the man that feareth the Lord, that delighteth greatly in his commandments. 2. His seed shall be mighty upon earth: the generation of the upright shall be blessed. 3. Wealth and riches shall be in his house: and his righteousness endureth for ever. 4. Unto the upright there ariseth light in the darkness: he is gracious, and full of compassion, and righteous. 5. A good man sheweth favour, and lendeth: he will guide his affairs with discretion. 6. Surely he shall not be moved for ever: the righteous shall be in everlasting remembrance. 7. He shall not be afraid of evil tidings: his heart is fixed, trusting in the Lord. 8. His heart is established, he shall not be afraid, until he see his desire upon his enemies. 9. He hath dispersed, he hath given to the poor; his righteousness endureth for ever; his horn shall be exalted with honour. 10. The wicked shall see it, and be grieved; he shall gnash with his teeth, and melt away: the desire of the wicked shall perish.",
+  "genre": "wisdom_psalm",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Fear_of_the_Lord",
+    "Righteousness",
+    "Generosity",
+    "Trust",
+    "Justice"
+  ],
+  "distilled_principles": [
+    "Reverent devotion to moral principles produces lasting stability and flourishing across generations",
+    "Generous lending and care for the poor demonstrates true righteousness more than wealth accumulation",
+    "Inner security rooted in transcendent trust enables fearless living despite external threats"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.9,
+    "virtue": 0.9,
+    "utilitarianism": 0.6
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The psalm scores highest on virtue ethics (character traits of the righteous) and justice (economic generosity toward the poor). Deontological elements appear in the duty to fear God and lend generously. Utilitarian themes emerge in the multi-generational flourishing that results from righteousness.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:00:23.476897+00:00",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 130,
+  "raw_text": "1. Out of the depths have I cried unto thee, O Lord. 2. Lord, hear my voice: let thine ears be attentive to the voice of my supplications. 3. If thou, Lord, shouldest mark iniquities, O Lord, who shall stand? 4. But there is forgiveness with thee, that thou mayest be feared. 5. I wait for the Lord, my soul doth wait, and in his word do I hope. 6. My soul waiteth for the Lord more than they that watch for the morning: I say, more than they that watch for the morning. 7. Let Israel hope in the Lord: for with the Lord there is mercy, and with him is plenteous redemption. 8. And he shall redeem Israel from all his iniquities.",
+  "genre": "penitential",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Repentance",
+    "Hope",
+    "Mercy",
+    "Patience",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Acknowledging personal moral failure with humility opens the path to restoration",
+    "Patient waiting through suffering develops spiritual resilience and deepens trust",
+    "Divine mercy exceeds human capacity for wrongdoing, making redemption always possible"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.7,
+    "justice": 0.6,
+    "virtue": 0.8,
+    "utilitarianism": 0.2
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage scores high on virtue ethics through its emphasis on patience, hope, and humility as character traits developed through adversity. Deontological themes emerge in the tension between deserved judgment and unmerited forgiveness, while justice concerns appear in the contrast between what humans deserve versus what mercy provides.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:06:33.081774+00:00",
+  "schema_version": "1.0"
+}

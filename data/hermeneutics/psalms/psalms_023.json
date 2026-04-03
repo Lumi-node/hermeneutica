@@ -1,0 +1,30 @@
+{
+  "book": "Psalms",
+  "chapter": 23,
+  "raw_text": "1. The Lord is my shepherd; I shall not want. 2. He maketh me to lie down in green pastures: he leadeth me beside the still waters. 3. He restoreth my soul: he leadeth me in the paths of righteousness for his name’s sake. 4. Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me. 5. Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over. 6. Surely goodness and mercy shall follow me all the days of my life: and I will dwell in the house of the Lord for ever.",
+  "genre": "psalm_of_trust",
+  "genre_confidence": 0.95,
+  "themes": [
+    "Trust",
+    "Protection",
+    "Faithfulness",
+    "Hope",
+    "Sovereignty"
+  ],
+  "distilled_principles": [
+    "Trust in providential care produces peace even in life-threatening adversity",
+    "Recognizing divine guidance enables confident navigation through moral and existential challenges"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.2,
+    "justice": 0.1,
+    "virtue": 0.9,
+    "utilitarianism": 0.7
+  },
+  "teaching_type": "metaphorical_wisdom",
+  "ethics_reasoning": "The psalm exemplifies virtue ethics through modeling trust, courage, and contentment as character traits that emerge from faith. It also relates to utilitarian ethics by depicting how trust in divine care leads to psychological well-being and flourishing despite external threats. The shepherd metaphor teaches these principles through imagery rather than direct commands.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:02:04.747465+00:00",
+  "schema_version": "1.0"
+}

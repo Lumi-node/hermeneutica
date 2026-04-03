@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 108,
+  "raw_text": "1. O God, my heart is fixed; I will sing and give praise, even with my glory. 2. Awake, psaltery and harp: I myself will awake early. 3. I will praise thee, O Lord, among the people: and I will sing praises unto thee among the nations. 4. For thy mercy is great above the heavens: and thy truth reacheth unto the clouds. 5. Be thou exalted, O God, above the heavens: and thy glory above all the earth; 6. That thy beloved may be delivered: save with thy right hand, and answer me. 7. God hath spoken in his holiness; I will rejoice, I will divide Shechem, and mete out the valley of Succoth. 8. Gilead is mine; Manasseh is mine; Ephraim also is the strength of mine head; Judah is my lawgiver; 9. Moab is my washpot; over Edom will I cast out my shoe; over Philistia will I triumph. 10. Who will bring me into the strong city? who will lead me into Edom? 11. Wilt not thou, O God, who hast cast us off? and wilt not thou, O God, go forth with our hosts? 12. Give us help from trouble: for vain is the help of man. 13. Through God we shall do valiantly: for he it is that shall tread down our enemies.",
+  "genre": "psalm_of_trust",
+  "genre_confidence": 0.8,
+  "themes": [
+    "Trust",
+    "Worship",
+    "Sovereignty",
+    "Courage",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Wholehearted commitment to gratitude and worship creates resilience in the face of adversity",
+    "Recognition of divine sovereignty over all nations and circumstances enables confident action despite human limitations",
+    "True help in crisis comes from transcendent sources rather than human schemes or alliances"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.7,
+    "justice": 0.4,
+    "virtue": 0.8,
+    "utilitarianism": 0.2
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The psalm scores high on virtue ethics (0.8) as it exemplifies steadfast faith, courage, and gratitude as character traits. It also relates strongly to deontology (0.7) through its emphasis on the duty to worship and trust God regardless of circumstances. The teaching about relying on divine rather than human help touches on justice themes but less directly.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:06:27.886736+00:00",
+  "schema_version": "1.0"
+}

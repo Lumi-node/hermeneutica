@@ -1,0 +1,31 @@
+{
+  "book": "Psalms",
+  "chapter": 5,
+  "raw_text": "1. Give ear to my words, O Lord, consider my meditation. 2. Hearken unto the voice of my cry, my King, and my God: for unto thee will I pray. 3. My voice shalt thou hear in the morning, O Lord; in the morning will I direct my prayer unto thee, and will look up. 4. For thou art not a God that hath pleasure in wickedness: neither shall evil dwell with thee. 5. The foolish shall not stand in thy sight: thou hatest all workers of iniquity. 6. Thou shalt destroy them that speak leasing: the Lord will abhor the bloody and deceitful man. 7. But as for me, I will come into thy house in the multitude of thy mercy: and in thy fear will I worship toward thy holy temple. 8. Lead me, O Lord, in thy righteousness because of mine enemies; make thy way straight before my face. 9. For there is no faithfulness in their mouth; their inward part is very wickedness; their throat is an open sepulchre; they flatter with their tongue. 10. Destroy thou them, O God; let them fall by their own counsels; cast them out in the multitude of their transgressions; for they have rebelled against thee. 11. But let all those that put their trust in thee rejoice: let them ever shout for joy, because thou defendest them: let them also that love thy name be joyful in thee. 12. For thou, Lord, wilt bless the righteous; with favour wilt thou compass him as with a shield.",
+  "genre": "psalm_of_lament",
+  "genre_confidence": 0.85,
+  "themes": [
+    "Trust",
+    "Justice",
+    "Righteousness",
+    "Truthfulness",
+    "Protection"
+  ],
+  "distilled_principles": [
+    "Persistent, disciplined prayer in times of adversity demonstrates trust and leads to divine protection",
+    "Moral integrity, especially truthfulness and non-violence, aligns one with divine favor while deception and violence lead to destruction",
+    "Those who practice righteousness can confidently seek justice against oppressors, trusting that evil ultimately self-destructs"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.9,
+    "virtue": 0.85,
+    "utilitarianism": 0.3
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage strongly emphasizes justice (divine retribution for evil), deontological duties (truthfulness, non-violence), and virtues (righteousness, reverence). It presents moral absolutes about God's character and human conduct, with clear consequences for virtue versus vice. Utilitarian concerns are minimal as the focus is on moral character rather than outcomes.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:01:58.724432+00:00",
+  "schema_version": "1.0"
+}

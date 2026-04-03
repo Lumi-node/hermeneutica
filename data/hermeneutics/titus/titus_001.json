@@ -1,0 +1,32 @@
+{
+  "book": "Titus",
+  "chapter": 1,
+  "raw_text": "1. Paul, a servant of God, and an apostle of Jesus Christ, according to the faith of God’s elect, and the acknowledging of the truth which is after godliness; 2. In hope of eternal life, which God, that cannot lie, promised before the world began; 3. But hath in due times manifested his word through preaching, which is committed unto me according to the commandment of God our Saviour; 4. To Titus, mine own son after the common faith: Grace, mercy, and peace, from God the Father and the Lord Jesus Christ our Saviour. 5. For this cause left I thee in Crete, that thou shouldest set in order the things that are wanting, and ordain elders in every city, as I had appointed thee: 6. If any be blameless, the husband of one wife, having faithful children not accused of riot or unruly. 7. For a bishop must be blameless, as the steward of God; not selfwilled, not soon angry, not given to wine, no striker, not given to filthy lucre; 8. But a lover of hospitality, a lover of good men, sober, just, holy, temperate; 9. Holding fast the faithful word as he hath been taught, that he may be able by sound doctrine both to exhort and to convince the gainsayers. 10. For there are many unruly and vain talkers and deceivers, specially they of the circumcision: 11. Whose mouths must be stopped, who subvert whole houses, teaching things which they ought not, for filthy lucre’s sake. 12. One of themselves, even a prophet of their own, said, The Cretians are alway liars, evil beasts, slow bellies. 13. This witness is true. Wherefore rebuke them sharply, that they may be sound in the faith; 14. Not giving heed to Jewish fables, and commandments of men, that turn from the truth. 15. Unto the pure all things are pure: but unto them that are defiled and unbelieving is nothing pure; but even their mind and conscience is defiled. 16. They profess that they know God; but in works they deny him, being abominable, and disobedient, and unto every good work reprobate.",
+  "genre": "prophetic_oracle",
+  "genre_confidence": 0.8,
+  "themes": [
+    "Leadership",
+    "Righteousness",
+    "Truthfulness",
+    "Discipline",
+    "Community"
+  ],
+  "distilled_principles": [
+    "Character integrity must precede positional authority - leaders should exemplify the virtues they expect from others",
+    "Truth and conduct must align - professing belief while living contrary to it is self-deception and harmful to community",
+    "Moral purity comes from internal transformation, not external rules or heritage",
+    "Leaders bear responsibility for protecting communities from destructive teachings motivated by greed"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.7,
+    "deontology": 0.8,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.6
+  },
+  "teaching_type": "explicit_command",
+  "ethics_reasoning": "The passage scores highest on virtue ethics (0.9) as it extensively catalogs character traits required for leadership. Deontology (0.8) is strong due to explicit duties of leaders and community members. Utilitarian concerns (0.6) appear in protecting communities from harmful teaching, while commonsense morality (0.7) underlies the practical wisdom about character and conduct alignment.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:06:58.467598+00:00",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,31 @@
+{
+  "book": "1 John",
+  "chapter": 1,
+  "raw_text": "1. That which was from the beginning, which we have heard, which we have seen with our eyes, which we have looked upon, and our hands have handled, of the Word of life; 2. (For the life was manifested, and we have seen it, and bear witness, and shew unto you that eternal life, which was with the Father, and was manifested unto us;) 3. That which we have seen and heard declare we unto you, that ye also may have fellowship with us: and truly our fellowship is with the Father, and with his Son Jesus Christ. 4. And these things write we unto you, that your joy may be full. 5. This then is the message which we have heard of him, and declare unto you, that God is light, and in him is no darkness at all. 6. If we say that we have fellowship with him, and walk in darkness, we lie, and do not the truth: 7. But if we walk in the light, as he is in the light, we have fellowship one with another, and the blood of Jesus Christ his Son cleanseth us from all sin. 8. If we say that we have no sin, we deceive ourselves, and the truth is not in us. 9. If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness. 10. If we say that we have not sinned, we make him a liar, and his word is not in us.",
+  "genre": "prophetic_oracle",
+  "genre_confidence": 0.7,
+  "themes": [
+    "Truthfulness",
+    "Fellowship",
+    "Repentance",
+    "Righteousness",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Authentic spiritual community requires moral integrity and honest self-examination",
+    "Self-deception about moral failings destroys both truth and relationships",
+    "Acknowledging personal wrongdoing is prerequisite to restoration and genuine fellowship"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.8,
+    "deontology": 0.7,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.3
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage scores highest on virtue ethics (0.9) because it centers on character traits of honesty, integrity, and truthfulness as essential to authentic relationships. Commonsense morality (0.8) is strongly present in the intuitive wrongness of hypocrisy and self-deception. Deontology (0.7) appears in the duty to confess sins and walk truthfully.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:02:34.425530+00:00",
+  "schema_version": "1.0"
+}

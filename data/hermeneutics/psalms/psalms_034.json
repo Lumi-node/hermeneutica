@@ -1,0 +1,32 @@
+{
+  "book": "Psalms",
+  "chapter": 34,
+  "raw_text": "1. I will bless the Lord at all times: his praise shall continually be in my mouth. 2. My soul shall make her boast in the Lord: the humble shall hear thereof, and be glad. 3. O magnify the Lord with me, and let us exalt his name together. 4. I sought the Lord, and he heard me, and delivered me from all my fears. 5. They looked unto him, and were lightened: and their faces were not ashamed. 6. This poor man cried, and the Lord heard him, and saved him out of all his troubles. 7. The angel of the Lord encampeth round about them that fear him, and delivereth them. 8. O taste and see that the Lord is good: blessed is the man that trusteth in him. 9. O fear the Lord, ye his saints: for there is no want to them that fear him. 10. The young lions do lack, and suffer hunger: but they that seek the Lord shall not want any good thing. 11. Come, ye children, hearken unto me: I will teach you the fear of the Lord. 12. What man is he that desireth life, and loveth many days, that he may see good? 13. Keep thy tongue from evil, and thy lips from speaking guile. 14. Depart from evil, and do good; seek peace, and pursue it. 15. The eyes of the Lord are upon the righteous, and his ears are open unto their cry. 16. The face of the Lord is against them that do evil, to cut off the remembrance of them from the earth. 17. The righteous cry, and the Lord heareth, and delivereth them out of all their troubles. 18. The Lord is nigh unto them that are of a broken heart; and saveth such as be of a contrite spirit. 19. Many are the afflictions of the righteous: but the Lord delivereth him out of them all. 20. He keepeth all his bones: not one of them is broken. 21. Evil shall slay the wicked: and they that hate the righteous shall be desolate. 22. The Lord redeemeth the soul of his servants: and none of them that trust in him shall be desolate.",
+  "genre": "thanksgiving",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Trust",
+    "Humility",
+    "Righteousness",
+    "Speech_Ethics",
+    "Protection"
+  ],
+  "distilled_principles": [
+    "Cultivating gratitude in all circumstances transforms suffering into spiritual growth",
+    "Ethical speech and peaceful conduct create conditions for divine protection and human flourishing",
+    "Those who embrace humility and brokenness find greater access to help than those who rely on their own strength",
+    "Fear of the Lord manifests practically through tongue control, active peacemaking, and departure from evil"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.8,
+    "deontology": 0.7,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.6
+  },
+  "teaching_type": "implicit_principle",
+  "ethics_reasoning": "The passage scores highest on virtue ethics (0.9) as it extensively catalogs character traits (humility, righteousness, speech control) and their outcomes. Commonsense morality (0.8) is strong through clear prohibitions against evil speech and conduct. Deontological elements (0.7) appear in duties to fear God and pursue peace, while utilitarian thinking (0.6) emerges in the contrast between outcomes for the righteous versus the wicked.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T01:57:05.376223+00:00",
+  "schema_version": "1.0"
+}

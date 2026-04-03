@@ -1,0 +1,30 @@
+{
+  "book": "Psalms",
+  "chapter": 3,
+  "raw_text": "1. Lord, how are they increased that trouble me! many are they that rise up against me. 2. Many there be which say of my soul, There is no help for him in God. Selah. 3. But thou, O Lord, art a shield for me; my glory, and the lifter up of mine head. 4. I cried unto the Lord with my voice, and he heard me out of his holy hill. Selah. 5. I laid me down and slept; I awaked; for the Lord sustained me. 6. I will not be afraid of ten thousands of people, that have set themselves against me round about. 7. Arise, O Lord; save me, O my God: for thou hast smitten all mine enemies upon the cheek bone; thou hast broken the teeth of the ungodly. 8. Salvation belongeth unto the Lord: thy blessing is upon thy people. Selah.",
+  "genre": "psalm_of_lament",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Trust",
+    "Protection",
+    "Courage",
+    "Faithfulness",
+    "Hope"
+  ],
+  "distilled_principles": [
+    "Maintaining trust in divine protection during overwhelming opposition cultivates inner peace and courage",
+    "Acknowledging vulnerability while affirming faith transforms fear into confident action"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.2,
+    "justice": 0.4,
+    "virtue": 0.9,
+    "utilitarianism": 0.6
+  },
+  "teaching_type": "exemplar_narrative",
+  "ethics_reasoning": "This psalm exemplifies virtue ethics through modeling courage, trust, and resilience in adversity. The utilitarian aspect emerges from the psalmist's testimony that trusting God produces peace and rest even when surrounded by enemies. Justice appears in the confidence that wrongdoers will ultimately face consequences.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:05:54.439644+00:00",
+  "schema_version": "1.0"
+}

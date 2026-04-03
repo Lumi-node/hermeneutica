@@ -1,0 +1,32 @@
+{
+  "book": "Isaiah",
+  "chapter": 55,
+  "raw_text": "1. Ho, every one that thirsteth, come ye to the waters, and he that hath no money; come ye, buy, and eat; yea, come, buy wine and milk without money and without price. 2. Wherefore do ye spend money for that which is not bread? and your labour for that which satisfieth not? hearken diligently unto me, and eat ye that which is good, and let your soul delight itself in fatness. 3. Incline your ear, and come unto me: hear, and your soul shall live; and I will make an everlasting covenant with you, even the sure mercies of David. 4. Behold, I have given him for a witness to the people, a leader and commander to the people. 5. Behold, thou shalt call a nation that thou knowest not, and nations that knew not thee shall run unto thee because of the Lord thy God, and for the Holy One of Israel; for he hath glorified thee. 6. Seek ye the Lord while he may be found, call ye upon him while he is near: 7. Let the wicked forsake his way, and the unrighteous man his thoughts: and let him return unto the Lord, and he will have mercy upon him; and to our God, for he will abundantly pardon. 8. For my thoughts are not your thoughts, neither are your ways my ways, saith the Lord. 9. For as the heavens are higher than the earth, so are my ways higher than your ways, and my thoughts than your thoughts. 10. For as the rain cometh down, and the snow from heaven, and returneth not thither, but watereth the earth, and maketh it bring forth and bud, that it may give seed to the sower, and bread to the eater: 11. So shall my word be that goeth forth out of my mouth: it shall not return unto me void, but it shall accomplish that which I please, and it shall prosper in the thing whereto I sent it. 12. For ye shall go out with joy, and be led forth with peace: the mountains and the hills shall break forth before you into singing, and all the trees of the field shall clap their hands. 13. Instead of the thorn shall come up the fir tree, and instead of the brier shall come up the myrtle tree: and it shall be to the Lord for a name, for an everlasting sign that shall not be cut off.",
+  "genre": "prophetic_oracle",
+  "genre_confidence": 0.9,
+  "themes": [
+    "Mercy",
+    "Repentance",
+    "Sovereignty",
+    "Hope",
+    "Generosity"
+  ],
+  "distilled_principles": [
+    "True satisfaction comes from spiritual nourishment rather than material pursuits",
+    "Divine mercy is freely available to all who genuinely seek it, regardless of their past",
+    "Humility in accepting that divine wisdom transcends human understanding leads to transformation",
+    "Urgent responsiveness to spiritual opportunities is essential as they may be time-limited"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.3,
+    "deontology": 0.7,
+    "justice": 0.4,
+    "virtue": 0.8,
+    "utilitarianism": 0.6
+  },
+  "teaching_type": "metaphorical_wisdom",
+  "ethics_reasoning": "The passage scores high on virtue ethics through its emphasis on repentance, humility, and seeking wisdom. Deontological elements are strong in the explicit commands to seek God and forsake wickedness. Utilitarian aspects appear in the promise of transformation and joy as outcomes of right action, while justice themes emerge in the universal invitation regardless of economic status.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:04:13.058884+00:00",
+  "schema_version": "1.0"
+}

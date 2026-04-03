@@ -1,0 +1,32 @@
+{
+  "book": "Psalms",
+  "chapter": 15,
+  "raw_text": "1. Lord, who shall abide in thy tabernacle? who shall dwell in thy holy hill? 2. He that walketh uprightly, and worketh righteousness, and speaketh the truth in his heart. 3. He that backbiteth not with his tongue, nor doeth evil to his neighbour, nor taketh up a reproach against his neighbour. 4. In whose eyes a vile person is contemned; but he honoureth them that fear the Lord. He that sweareth to his own hurt, and changeth not. 5. He that putteth not out his money to usury, nor taketh reward against the innocent. He that doeth these things shall never be moved.",
+  "genre": "torah_psalm",
+  "genre_confidence": 0.85,
+  "themes": [
+    "Righteousness",
+    "Truthfulness",
+    "Justice",
+    "Community",
+    "Faithfulness"
+  ],
+  "distilled_principles": [
+    "Moral integrity requires consistency between inner convictions and outward actions",
+    "Ethical character is demonstrated through how we treat others, especially in speech and financial dealings",
+    "Keeping commitments even when costly to oneself builds trustworthy character",
+    "True worship requires ethical living, not just religious observance"
+  ],
+  "ethics_mapping": {
+    "commonsense": 0.8,
+    "deontology": 0.9,
+    "justice": 0.7,
+    "virtue": 0.95,
+    "utilitarianism": 0.3
+  },
+  "teaching_type": "explicit_command",
+  "ethics_reasoning": "This passage presents a virtue ethics framework through explicit moral requirements for dwelling with God. The emphasis on character traits (truthfulness, integrity, faithfulness to oaths) and duties to neighbors makes it highly relevant to virtue and deontological ethics. The prohibitions against exploitation and false witness also invoke justice concerns.",
+  "classified_by": "claude-opus-4-20250514",
+  "classified_at": "2026-04-03T02:05:58.407170+00:00",
+  "schema_version": "1.0"
+}
