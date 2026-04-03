@@ -74,15 +74,26 @@ def train_with_unsloth(cfg: dict):
         use_gradient_checkpointing="unsloth",  # Unsloth optimization
     )
 
-    # Load dataset
-    dataset = load_dataset_jsonl(train_cfg["dataset"])
-    print(f"Training examples: {len(dataset):,}")
+    # Load dataset and pre-format with chat template
+    raw_dataset = load_dataset_jsonl(train_cfg["dataset"])
+    print(f"Training examples: {len(raw_dataset):,}")
 
-    # Configure trainer
+    # Pre-apply chat template to create a 'text' field
+    def apply_template(example):
+        text = tokenizer.apply_chat_template(
+            example["messages"], tokenize=False, add_generation_prompt=False
+        )
+        return {"text": text}
+
+    dataset = raw_dataset.map(apply_template, remove_columns=["messages"])
+    print(f"Formatted {len(dataset):,} examples")
+
+    # Configure trainer (uses 'text' field directly, no formatting_func needed)
     trainer = SFTTrainer(
         model=model,
         tokenizer=tokenizer,
         train_dataset=dataset,
+        dataset_text_field="text",
         args=SFTConfig(
             output_dir=train_cfg["output_dir"],
             num_train_epochs=train_cfg["num_train_epochs"],
@@ -99,8 +110,7 @@ def train_with_unsloth(cfg: dict):
             fp16=not is_bfloat16_supported(),
             optim=train_cfg.get("optim", "adamw_8bit"),
             max_seq_length=model_cfg["max_seq_length"],
-            dataset_text_field=None,
-            packing=True,  # Pack short examples together for efficiency
+            packing=True,
         ),
     )
 
