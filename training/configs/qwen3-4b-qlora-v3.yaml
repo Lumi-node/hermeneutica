@@ -1,0 +1,33 @@
+model:
+  name: "Qwen/Qwen3-4B"
+  max_seq_length: 2048
+  dtype: null
+  load_in_4bit: true
+
+lora:
+  r: 64
+  lora_alpha: 64
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  bias: "none"
+
+training:
+  dataset: "training/datasets/train_v3.jsonl"
+  output_dir: "training/checkpoints/qwen3-4b-qlora-v3"
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  lr_scheduler_type: "cosine"
+  logging_steps: 10
+  save_steps: 200
+  seed: 42
+  bf16: true
+  gradient_checkpointing: true
+  optim: "adamw_8bit"
+
+adapter:
+  save_path: "training/checkpoints/qwen3-4b-qlora-v3/adapter"
+  push_to_hub: false
