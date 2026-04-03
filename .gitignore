@@ -22,8 +22,19 @@ data/ethics/
 # Inspect AI logs
 results/logs/
 
-# Training data output (generated)
-training_data/*.jsonl
+# Training artifacts (large, generated)
+training/datasets/*.jsonl
+training/checkpoints/
+training/logs/
+
+# Old training_data folder
+training_data/
+
+# Experiment results (raw JSON can be large)
+experiments/*/results.json
+
+# Eval benchmark data
+eval/benchmarks/
 
 # OS
 .DS_Store

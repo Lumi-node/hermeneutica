@@ -1,0 +1,36 @@
+# Experiment Configuration Template
+# Copy this folder to experiments/NNN-description/ and fill in
+
+experiment:
+  id: "NNN"
+  name: "description"
+  date: "YYYY-MM-DD"
+  question: "What are we testing?"
+  hypothesis: "What do we expect?"
+
+model:
+  name: ""                    # e.g., Qwen/Qwen3-4B, openai/gpt-4o
+  variant: ""                 # e.g., lora-v1, vanilla
+  checkpoint: ""              # path to checkpoint if LoRA
+
+conditions:
+  # List conditions being compared
+  - label: "A"
+    description: "vanilla baseline"
+    injection: null
+  - label: "C"
+    description: "distilled principles"
+    injection: "principles"
+
+benchmark:
+  name: "hendrycks_ethics"
+  subsets: ["commonsense", "deontology", "justice", "virtue", "utilitarianism"]
+  limit: null                 # null = full benchmark, int = sample size
+
+parameters:
+  seed: 42
+  temperature: 0
+  top_k: 10                   # for principle selection
+  min_relevance: 0.5          # for topic matching
+
+notes: ""

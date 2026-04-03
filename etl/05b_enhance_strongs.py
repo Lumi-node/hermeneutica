@@ -56,7 +56,7 @@ def parse_lexicon(filepath: Path) -> dict:
             if len(cols) < 8:
                 continue
 
-            base_num = cols[0].strip()  # e.g., H4941
+            raw_num = cols[0].strip()  # e.g., H4941 or H2617a
             dstrong = cols[1].strip()   # e.g., H4941G = or H4941H = a Meaning of
             # cols[2] = unified strong
             # cols[3] = Hebrew/Greek form
@@ -65,9 +65,11 @@ def parse_lexicon(filepath: Path) -> dict:
             gloss = cols[6].strip() if len(cols) > 6 else ""   # e.g., justice: judgement
             definition = cols[7].strip() if len(cols) > 7 else ""
 
-            # Validate base number
-            if not re.match(r"^[HG]\d+$", base_num):
+            # Extract base number (strip trailing letter variants: H2617a -> H2617)
+            base_match = re.match(r"^([HG]\d+)", raw_num)
+            if not base_match:
                 continue
+            base_num = base_match.group(1)
 
             # Clean definition
             definition = _clean_html(definition)
