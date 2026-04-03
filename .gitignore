@@ -45,3 +45,4 @@ Thumbs.db
 .vscode/
 *.swp
 data/raw/MetaV/
+unsloth_compiled_cache/
