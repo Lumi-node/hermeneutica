@@ -34,8 +34,8 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD", "postgres")
 # Embedding model
 # ---------------------------------------------------------------------------
 
-EMBEDDING_MODEL = "BAAI/bge-base-en-v1.5"
-EMBEDDING_DIM = 768
+EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-8B"
+EMBEDDING_DIM = 2000  # Matryoshka truncated from 4096 (pgvector 0.6 HNSW max: 2000)
 
 # ---------------------------------------------------------------------------
 # ETL
