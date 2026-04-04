@@ -1,0 +1,60 @@
+site_name: Hermeneutica
+site_url: https://lumi-node.github.io/hermeneutica/
+site_description: A 3D interactive explorer for the Bible's internal structure
+site_author: Automate Capture, LLC
+repo_url: https://github.com/Lumi-node/hermeneutica
+repo_name: Lumi-node/hermeneutica
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: amber
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: amber
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - toc.integrate
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: getting-started/quickstart.md
+    - Database Setup: getting-started/database.md
+    - Web App: getting-started/webapp.md
+  - Explorer Guide:
+    - Scripture Galaxy: guide/galaxy.md
+    - Knowledge Graph: guide/graph.md
+    - Word Study: guide/words.md
+    - Analytics: guide/analytics.md
+    - Exploration Tools: guide/tools.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Data Pipeline: architecture/pipeline.md
+    - API Reference: architecture/api.md
+  - Research:
+    - About: research/about.md
+    - Data Sources: research/sources.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
