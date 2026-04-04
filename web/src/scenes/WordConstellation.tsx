@@ -16,12 +16,32 @@ export function WordConstellation() {
 
   useEffect(() => {
     if (!strongsPoints?.loaded) {
-      setLoading(true, 'Loading Strong\'s lexicon...');
+      setLoading(true, 'Loading 14,298 Strong\'s lexicon entries...');
       loadStrongsPoints()
         .catch(console.error)
         .finally(() => setLoading(false));
     }
   }, [strongsPoints?.loaded, loadStrongsPoints, setLoading]);
+
+  // Scale and center coordinates (same approach as Galaxy)
+  const scaledPositions = useMemo(() => {
+    if (!strongsPoints) return new Float32Array(0);
+    const SCALE = 8;
+    const p = strongsPoints.positions;
+    const n = strongsPoints.count;
+    const scaled = new Float32Array(p.length);
+    let cx = 0, cy = 0, cz = 0;
+    for (let i = 0; i < n; i++) {
+      cx += p[i * 3]; cy += p[i * 3 + 1]; cz += p[i * 3 + 2];
+    }
+    cx /= n; cy /= n; cz /= n;
+    for (let i = 0; i < n; i++) {
+      scaled[i * 3] = (p[i * 3] - cx) * SCALE;
+      scaled[i * 3 + 1] = (p[i * 3 + 1] - cy) * SCALE;
+      scaled[i * 3 + 2] = (p[i * 3 + 2] - cz) * SCALE;
+    }
+    return scaled;
+  }, [strongsPoints]);
 
   const colors = useMemo(() => {
     if (!strongsPoints) return new Float32Array(0);
@@ -42,7 +62,7 @@ export function WordConstellation() {
     const { usageCounts, count } = strongsPoints;
     const s = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      s[i] = 0.5 + Math.min(usageCounts[i] / 100, 3);
+      s[i] = 0.5 + Math.min(usageCounts[i] / 50, 4);
     }
     return s;
   }, [strongsPoints]);
@@ -53,10 +73,9 @@ export function WordConstellation() {
   }, [hoveredIndex, strongsPoints]);
 
   const hoveredPosition = useMemo((): [number, number, number] | null => {
-    if (hoveredIndex === null || !strongsPoints) return null;
-    const p = strongsPoints.positions;
-    return [p[hoveredIndex * 3], p[hoveredIndex * 3 + 1], p[hoveredIndex * 3 + 2]];
-  }, [hoveredIndex, strongsPoints]);
+    if (hoveredIndex === null || !scaledPositions.length) return null;
+    return [scaledPositions[hoveredIndex * 3], scaledPositions[hoveredIndex * 3 + 1], scaledPositions[hoveredIndex * 3 + 2]];
+  }, [hoveredIndex, scaledPositions]);
 
   const handleClick = useCallback(
     (index: number) => {
@@ -87,14 +106,14 @@ export function WordConstellation() {
       <ambientLight intensity={0.6} />
       <pointLight position={[50, 50, 50]} intensity={0.8} />
       <InstancedPoints
-        positions={strongsPoints.positions}
+        positions={scaledPositions}
         colors={colors}
         sizes={sizes}
         count={strongsPoints.count}
         visibilityMask={visibilityMask}
         onHover={setHoveredIndex}
         onClick={handleClick}
-        baseSize={0.5}
+        baseSize={0.15}
       />
       <HoverLabel position={hoveredPosition} text={hoveredLabel} />
     </>

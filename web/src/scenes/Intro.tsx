@@ -1,4 +1,5 @@
 import { useSceneStore } from '@/stores/sceneStore';
+import { ContactForm } from '@/panels/ContactForm';
 
 export function Intro() {
   const setActiveScene = useSceneStore(s => s.setActiveScene);
@@ -182,6 +183,17 @@ export function Intro() {
           </button>
         </div>
 
+        {/* Contact */}
+        <div data-contact />
+        <Section title="Get in Touch">
+          <p>
+            Questions, feedback, or ideas for new features? We'd love to hear from you.
+          </p>
+          <div className="mt-4">
+            <ContactForm />
+          </div>
+        </Section>
+
         {/* Footer links */}
         <footer className="border-t border-white/5 pt-6 pb-10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -207,7 +219,8 @@ export function Intro() {
                 className="text-xs text-gray-500 hover:text-white transition">
                 LinkedIn
               </a>
-              <a href="mailto:andrew@automate-capture.com"
+              <a href="#contact"
+                onClick={(e) => { e.preventDefault(); document.querySelector('[data-contact]')?.scrollIntoView({ behavior: 'smooth' }); }}
                 className="text-xs text-gray-500 hover:text-white transition">
                 Contact
               </a>

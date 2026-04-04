@@ -1,8 +1,11 @@
-from fastapi import FastAPI
+import os
+import httpx
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from . import db
 from .routers import verses, graph, strongs, crossrefs, hermeneutics, search, explore, journal
@@ -26,7 +29,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://hermeneutica.xyz", "https://web-seven-delta-16.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,3 +55,50 @@ app.include_router(journal.router, prefix="/api")
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok"}
+
+
+class ContactRequest(BaseModel):
+    name: str
+    email: str
+    message: str
+
+
+@app.post("/api/contact")
+async def send_contact(req: ContactRequest):
+    api_key = os.getenv("RESEND_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="Email service not configured")
+
+    # Sanitize
+    name = req.name.strip()[:200]
+    email = req.email.strip()[:200]
+    message = req.message.strip()[:5000]
+
+    if not name or not email or not message:
+        raise HTTPException(status_code=400, detail="All fields required")
+
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {api_key}"},
+            json={
+                "from": "Hermeneutica <onboarding@resend.dev>",
+                "to": ["andrew@automate-capture.com"],
+                "reply_to": email,
+                "subject": f"[Hermeneutica] Message from {name}",
+                "html": f"""
+                    <div style="font-family: system-ui, sans-serif; max-width: 600px;">
+                        <h2 style="color: #E8A838;">New message from Hermeneutica Explorer</h2>
+                        <p><strong>From:</strong> {name} ({email})</p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 16px 0;" />
+                        <p style="white-space: pre-wrap; line-height: 1.6;">{message}</p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 16px 0;" />
+                        <p style="color: #999; font-size: 12px;">Sent from hermeneutica.xyz contact form</p>
+                    </div>
+                """,
+            },
+        )
+        if resp.status_code >= 400:
+            raise HTTPException(status_code=500, detail="Failed to send email")
+
+    return {"success": True}
