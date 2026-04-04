@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://hermeneutica-api.blueisland-113db368.canadacentral.azurecontainerapps.io/api/:path*" },
+    { "source": "/data/:path*", "destination": "https://hermeneutica-api.blueisland-113db368.canadacentral.azurecontainerapps.io/data/:path*" }
+  ]
+}

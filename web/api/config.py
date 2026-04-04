@@ -2,6 +2,9 @@ import os
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/bible_research")
 
+# Azure Postgres requires SSL
+DATABASE_SSL = os.getenv("DATABASE_SSL", "").lower() in ("true", "1", "require")
+
 DB_POOL_MIN = 2
 DB_POOL_MAX = 10
 

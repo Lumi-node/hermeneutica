@@ -1,3 +1,4 @@
+import ssl
 import asyncpg
 from . import config
 import contextlib
@@ -11,10 +12,12 @@ async def get_pool() -> asyncpg.Pool:
 async def init_db_pool() -> None:
     global pool
     try:
+        ssl_ctx = ssl.create_default_context() if config.DATABASE_SSL else None
         pool = await asyncpg.create_pool(
             dsn=config.DATABASE_URL,
             min_size=config.DB_POOL_MIN,
-            max_size=config.DB_POOL_MAX
+            max_size=config.DB_POOL_MAX,
+            ssl=ssl_ctx,
         )
         print("Database connection pool initialized successfully.")
     except Exception as e:

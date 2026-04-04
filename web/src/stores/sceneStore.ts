@@ -29,7 +29,7 @@ interface SceneState {
 }
 
 export const useSceneStore = create<SceneState>((set) => ({
-  activeScene: 'galaxy',
+  activeScene: 'intro',
   setActiveScene: (scene) => set({ activeScene: scene, selectedNodeType: null, selectedNodeId: null }),
 
   selectedNodeType: null,
