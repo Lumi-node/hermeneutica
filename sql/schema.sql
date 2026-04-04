@@ -342,3 +342,95 @@ SELECT
 FROM word_alignments wa
 JOIN v_verses vv ON vv.verse_id = wa.verse_id
 LEFT JOIN strongs_entries se ON se.strongs_number = wa.strongs_number;
+
+
+-- ============================================================
+-- 9. CONFESSIONS & CREEDS
+-- ============================================================
+
+-- The confessional documents themselves
+CREATE TABLE confessions (
+    id              SMALLSERIAL  PRIMARY KEY,
+    name            VARCHAR(120) NOT NULL UNIQUE,
+    abbreviation    VARCHAR(10)  NOT NULL UNIQUE,    -- HC, WCF, WLC, WSC, BC, CD
+    confession_type VARCHAR(20)  NOT NULL,            -- 'catechism', 'confession', 'canon', 'creed'
+    tradition       VARCHAR(30)  NOT NULL,            -- 'reformed', 'presbyterian', 'ecumenical'
+    year            SMALLINT     NOT NULL,
+    authors         TEXT,
+    original_language VARCHAR(10),
+    source_url      TEXT,
+    source_repo     VARCHAR(80),                      -- 'Creeds.json' or 'compendium'
+    loaded_at       TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+-- Individual items within a confession (questions, articles, sections)
+-- Self-referencing parent_id handles arbitrary nesting:
+--   WCF: chapter → section, Dort: head → article, catechisms: flat
+CREATE TABLE confession_items (
+    id                  SERIAL       PRIMARY KEY,
+    confession_id       SMALLINT     NOT NULL REFERENCES confessions(id) ON DELETE CASCADE,
+    parent_id           INTEGER      REFERENCES confession_items(id) ON DELETE CASCADE,
+    item_number         SMALLINT     NOT NULL,
+    item_type           VARCHAR(20)  NOT NULL,        -- 'question','article','chapter','section','head'
+    title               TEXT,                          -- chapter/article titles (nullable)
+    question_text       TEXT,                          -- catechisms only: the question
+    answer_text         TEXT,                          -- catechisms: answer; confessions: body text
+    answer_with_proofs  TEXT,                          -- text with [1] [a] proof markers
+    sort_order          SMALLINT     NOT NULL DEFAULT 0,
+    UNIQUE (confession_id, COALESCE(parent_id, 0), item_number)
+);
+CREATE INDEX idx_ci_confession ON confession_items (confession_id);
+CREATE INDEX idx_ci_parent     ON confession_items (parent_id);
+CREATE INDEX idx_ci_type       ON confession_items (item_type);
+CREATE INDEX idx_ci_text_trgm  ON confession_items USING gin (answer_text gin_trgm_ops);
+
+-- Proof-text links: confession item → verse (one row per verse, ranges expanded)
+CREATE TABLE confession_proof_texts (
+    id              SERIAL       PRIMARY KEY,
+    item_id         INTEGER      NOT NULL REFERENCES confession_items(id) ON DELETE CASCADE,
+    verse_id        INTEGER      REFERENCES verses(id),        -- NULL if verse not resolved
+    proof_group     VARCHAR(5)   NOT NULL,                      -- 'a','b','1','2' — footnote marker
+    osis_ref        TEXT         NOT NULL,                       -- original ref string for provenance
+    UNIQUE (item_id, proof_group, COALESCE(verse_id, 0))
+);
+CREATE INDEX idx_cpt_item      ON confession_proof_texts (item_id);
+CREATE INDEX idx_cpt_verse     ON confession_proof_texts (verse_id);
+CREATE INDEX idx_cpt_group     ON confession_proof_texts (proof_group);
+
+-- Denormalized view: confession items with parent context
+CREATE OR REPLACE VIEW v_confession_items AS
+SELECT
+    ci.id AS item_id,
+    c.name AS confession_name,
+    c.abbreviation AS confession_abbrev,
+    c.confession_type,
+    ci.item_type,
+    ci.item_number,
+    ci.title,
+    ci.question_text,
+    ci.answer_text,
+    p.item_number AS parent_number,
+    p.title AS parent_title,
+    p.item_type AS parent_type
+FROM confession_items ci
+JOIN confessions c ON c.id = ci.confession_id
+LEFT JOIN confession_items p ON p.id = ci.parent_id;
+
+-- Denormalized view: proof texts with verse and confession context
+CREATE OR REPLACE VIEW v_confession_proof_texts AS
+SELECT
+    cpt.id AS proof_id,
+    c.abbreviation AS confession_abbrev,
+    ci.item_type,
+    ci.item_number,
+    ci.title AS item_title,
+    cpt.proof_group,
+    cpt.osis_ref,
+    vv.book_name,
+    vv.chapter_number,
+    vv.verse_number,
+    vv.text AS verse_text
+FROM confession_proof_texts cpt
+JOIN confession_items ci ON ci.id = cpt.item_id
+JOIN confessions c ON c.id = ci.confession_id
+LEFT JOIN v_verses vv ON vv.verse_id = cpt.verse_id;
