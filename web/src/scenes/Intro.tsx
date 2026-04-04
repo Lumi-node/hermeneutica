@@ -173,7 +173,7 @@ export function Intro() {
         </Section>
 
         {/* CTA */}
-        <div className="text-center pb-8">
+        <div className="text-center py-6">
           <button
             onClick={() => setActiveScene('galaxy')}
             className="bg-accent-gold hover:bg-accent-gold/80 text-bg-primary px-8 py-3 rounded-lg text-sm font-semibold transition"
@@ -181,6 +181,39 @@ export function Intro() {
             Start Exploring
           </button>
         </div>
+
+        {/* Footer links */}
+        <footer className="border-t border-white/5 pt-6 pb-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <p className="text-xs text-gray-500">
+                Made by{' '}
+                <a href="https://www.automate-capture.com" target="_blank" rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition underline underline-offset-2">
+                  Automate Capture, LLC
+                </a>
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <a href="https://github.com/Lumi-node/hermeneutica" target="_blank" rel="noopener noreferrer"
+                className="text-xs text-gray-500 hover:text-white transition">
+                GitHub
+              </a>
+              <a href="https://www.automate-capture.com" target="_blank" rel="noopener noreferrer"
+                className="text-xs text-gray-500 hover:text-white transition">
+                automate-capture.com
+              </a>
+              <a href="https://www.linkedin.com/in/andrew-young-executive" target="_blank" rel="noopener noreferrer"
+                className="text-xs text-gray-500 hover:text-white transition">
+                LinkedIn
+              </a>
+              <a href="mailto:andrew@automate-capture.com"
+                className="text-xs text-gray-500 hover:text-white transition">
+                Contact
+              </a>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

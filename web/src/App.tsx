@@ -124,6 +124,13 @@ export default function App() {
                 </div>
               </div>
             )}
+
+            {/* Attribution corner */}
+            <div className="absolute bottom-11 left-2 z-10 text-[9px] text-gray-700 hover:text-gray-500 transition">
+              <a href="https://www.automate-capture.com" target="_blank" rel="noopener noreferrer">
+                Made by Automate Capture, LLC
+              </a>
+            </div>
           </>
         )}
       </div>
