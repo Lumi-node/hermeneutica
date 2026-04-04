@@ -523,3 +523,139 @@ async def crossref_overlay(
             arcs=arcs,
             description=config["desc"],
         )
+
+
+# ============================================================
+# Analytics Heatmap Endpoints
+# ============================================================
+
+@router.get("/heatmap/topics")
+async def topic_distribution_heatmap(top_n: int = 25):
+    """66 books x top N topics — verse count per cell."""
+    async with db.pool.acquire() as conn:
+        # Top N topics
+        topic_rows = await conn.fetch("""
+            SELECT nt.topic, COUNT(DISTINCT ntv.verse_id) as total
+            FROM nave_topics nt
+            JOIN nave_topic_verses ntv ON ntv.topic_id = nt.id
+            GROUP BY nt.topic ORDER BY total DESC LIMIT $1
+        """, top_n)
+        topics = [r["topic"] for r in topic_rows]
+
+        # All books
+        book_rows = await conn.fetch("SELECT id, name, abbreviation, book_order, testament FROM books ORDER BY book_order")
+        books = [dict(r) for r in book_rows]
+
+        # Batch: get all (book_id, topic, count) in one query
+        data_rows = await conn.fetch("""
+            SELECT ch.book_id, nt.topic, COUNT(DISTINCT ntv.verse_id) as cnt
+            FROM nave_topic_verses ntv
+            JOIN nave_topics nt ON nt.id = ntv.topic_id
+            JOIN verses v ON v.id = ntv.verse_id
+            JOIN chapters ch ON ch.id = v.chapter_id
+            WHERE nt.topic = ANY($1::text[])
+            GROUP BY ch.book_id, nt.topic
+        """, topics)
+
+        # Build lookup
+        lookup: dict[tuple[int, str], int] = {}
+        for r in data_rows:
+            lookup[(r["book_id"], r["topic"])] = r["cnt"]
+
+        # Build matrix
+        max_val = 0
+        matrix = []
+        for b in book_rows:
+            row = []
+            for t in topics:
+                v = lookup.get((b["id"], t), 0)
+                row.append(v)
+                if v > max_val:
+                    max_val = v
+            matrix.append(row)
+
+        return {"books": books, "topics": topics, "matrix": matrix, "max_value": max_val}
+
+
+@router.get("/heatmap/ethics")
+async def ethics_landscape_heatmap():
+    """66 books x 5 ethics dimensions — average score per book."""
+    subsets = ["commonsense", "deontology", "justice", "virtue", "utilitarianism"]
+
+    async with db.pool.acquire() as conn:
+        book_rows = await conn.fetch("SELECT id, name, abbreviation, book_order, testament FROM books ORDER BY book_order")
+        books = [dict(r) for r in book_rows]
+
+        classified = await conn.fetchval("SELECT COUNT(*) FROM passage_classifications") or 0
+
+        # Get all scores in one query
+        score_rows = await conn.fetch("""
+            SELECT b.id as book_id, pes.ethics_subset, AVG(pes.relevance_score) as avg_score
+            FROM passage_ethics_scores pes
+            JOIN passage_classifications pc ON pc.id = pes.classification_id
+            JOIN chapters ch ON ch.id = pc.chapter_id
+            JOIN books b ON b.id = ch.book_id
+            GROUP BY b.id, pes.ethics_subset
+        """)
+
+        # Build lookup
+        lookup: dict[tuple[int, str], float] = {}
+        for r in score_rows:
+            lookup[(r["book_id"], r["ethics_subset"])] = float(r["avg_score"])
+
+        matrix = []
+        for b in book_rows:
+            row = [round(lookup.get((b["id"], s), 0.0), 4) for s in subsets]
+            matrix.append(row)
+
+        return {"books": books, "ethics_subsets": subsets, "matrix": matrix, "classified_chapters": classified}
+
+
+@router.get("/heatmap/words")
+async def word_frequency_heatmap(top_n: int = 30):
+    """66 books x top N Strong's words — usage count per cell."""
+    async with db.pool.acquire() as conn:
+        # Top N words
+        word_rows = await conn.fetch("""
+            SELECT se.strongs_number, se.transliteration, se.language,
+                   LEFT(se.root_definition, 40) as short_def,
+                   COUNT(*) as total
+            FROM word_alignments wa
+            JOIN strongs_entries se ON se.strongs_number = wa.strongs_number
+            GROUP BY se.strongs_number, se.transliteration, se.language, se.root_definition
+            ORDER BY total DESC LIMIT $1
+        """, top_n)
+        words = [{"strongs_number": w["strongs_number"], "transliteration": w["transliteration"] or "",
+                   "language": w["language"], "short_def": w["short_def"] or ""} for w in word_rows]
+        strongs_nums = [w["strongs_number"] for w in word_rows]
+
+        book_rows = await conn.fetch("SELECT id, name, abbreviation, book_order, testament FROM books ORDER BY book_order")
+        books = [dict(r) for r in book_rows]
+
+        # Batch query all (book_id, strongs_number, count)
+        data_rows = await conn.fetch("""
+            SELECT b.id as book_id, wa.strongs_number, COUNT(*) as cnt
+            FROM word_alignments wa
+            JOIN verses v ON v.id = wa.verse_id
+            JOIN chapters ch ON ch.id = v.chapter_id
+            JOIN books b ON b.id = ch.book_id
+            WHERE wa.strongs_number = ANY($1::text[])
+            GROUP BY b.id, wa.strongs_number
+        """, strongs_nums)
+
+        lookup: dict[tuple[int, str], int] = {}
+        for r in data_rows:
+            lookup[(r["book_id"], r["strongs_number"])] = r["cnt"]
+
+        max_val = 0
+        matrix = []
+        for b in book_rows:
+            row = []
+            for sn in strongs_nums:
+                v = lookup.get((b["id"], sn), 0)
+                row.append(v)
+                if v > max_val:
+                    max_val = v
+            matrix.append(row)
+
+        return {"books": books, "words": words, "matrix": matrix, "max_value": max_val}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from 'react';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Text } from '@react-three/drei';
 import { InstancedPoints } from '@/objects/InstancedPoints';
 import { HoverLabel } from '@/objects/HoverLabel';
 import { useSceneStore } from '@/stores/sceneStore';
@@ -98,6 +98,23 @@ export function WordConstellation() {
     return mask;
   }, [strongsPoints, testamentFilter]);
 
+  // Compute centroids for Hebrew and Greek clusters
+  const clusterLabels = useMemo(() => {
+    if (!strongsPoints || !scaledPositions.length) return { heb: [0, 0, 0] as [number, number, number], grc: [0, 0, 0] as [number, number, number] };
+    const { languages, count } = strongsPoints;
+    let hx = 0, hy = 0, hz = 0, hc = 0;
+    let gx = 0, gy = 0, gz = 0, gc = 0;
+    for (let i = 0; i < count; i++) {
+      const x = scaledPositions[i * 3], y = scaledPositions[i * 3 + 1], z = scaledPositions[i * 3 + 2];
+      if (languages[i] === 0) { hx += x; hy += y; hz += z; hc++; }
+      else { gx += x; gy += y; gz += z; gc++; }
+    }
+    return {
+      heb: [hc ? hx / hc : 0, hc ? hy / hc + 12 : 0, hc ? hz / hc : 0] as [number, number, number],
+      grc: [gc ? gx / gc : 0, gc ? gy / gc + 12 : 0, gc ? gz / gc : 0] as [number, number, number],
+    };
+  }, [strongsPoints, scaledPositions]);
+
   if (!strongsPoints?.loaded) return null;
 
   return (
@@ -115,6 +132,54 @@ export function WordConstellation() {
         onClick={handleClick}
         baseSize={0.15}
       />
+
+      {/* Floating cluster labels */}
+      <Text
+        position={clusterLabels.heb}
+        fontSize={3}
+        color="#D4A574"
+        anchorX="center"
+        anchorY="bottom"
+        fillOpacity={0.25}
+        font={undefined}
+      >
+        Hebrew
+      </Text>
+      <Text
+        position={[clusterLabels.heb[0], clusterLabels.heb[1] - 3, clusterLabels.heb[2]]}
+        fontSize={1.2}
+        color="#D4A574"
+        anchorX="center"
+        anchorY="bottom"
+        fillOpacity={0.15}
+        font={undefined}
+      >
+        8,674 Old Testament words
+      </Text>
+
+      <Text
+        position={clusterLabels.grc}
+        fontSize={3}
+        color="#7EB8DA"
+        anchorX="center"
+        anchorY="bottom"
+        fillOpacity={0.25}
+        font={undefined}
+      >
+        Greek
+      </Text>
+      <Text
+        position={[clusterLabels.grc[0], clusterLabels.grc[1] - 3, clusterLabels.grc[2]]}
+        fontSize={1.2}
+        color="#7EB8DA"
+        anchorX="center"
+        anchorY="bottom"
+        fillOpacity={0.15}
+        font={undefined}
+      >
+        5,624 New Testament words
+      </Text>
+
       <HoverLabel position={hoveredPosition} text={hoveredLabel} />
     </>
   );

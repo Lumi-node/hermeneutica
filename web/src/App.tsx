@@ -6,8 +6,10 @@ import { ScriptureGalaxy } from '@/scenes/ScriptureGalaxy';
 import { GraphExplorer } from '@/scenes/GraphExplorer';
 import { WordConstellation } from '@/scenes/WordConstellation';
 import { CrossRefMatrix } from '@/scenes/CrossRefMatrix';
+import { Journal } from '@/scenes/Journal';
 import { FilterPanel } from '@/panels/FilterPanel';
 import { VerseDetailPanel } from '@/panels/VerseDetailPanel';
+import { StrongsDetailPanel } from '@/panels/StrongsDetailPanel';
 import { SearchPanel } from '@/panels/SearchPanel';
 import { ToolBar } from '@/panels/ToolBar';
 import { GalaxyLegend } from '@/panels/LegendPanel';
@@ -18,13 +20,14 @@ const NAV_SCENES: { id: SceneId; label: string }[] = [
   { id: 'graph', label: 'Knowledge Graph' },
   { id: 'words', label: 'Word Study' },
   { id: 'crossref', label: 'Cross-References' },
+  { id: 'journal', label: 'Journal' },
 ];
 
 // Scenes that use the 3D canvas
-const is3DScene = (s: SceneId) => ['galaxy', 'graph', 'words', 'crossref'].includes(s);
+const is3DScene = (s: SceneId) => ['galaxy', 'graph', 'words'].includes(s);
 
 export default function App() {
-  const { activeScene, setActiveScene, selectedNodeId, selectNode } = useSceneStore();
+  const { activeScene, setActiveScene, selectedNodeId, selectedNodeType, selectNode } = useSceneStore();
   const { isLoading, loadingMessage, toggleSearchPanel, searchPanelOpen, toggleFilterPanel, filterPanelOpen } = useUIStore();
 
   const show3D = is3DScene(activeScene);
@@ -80,8 +83,10 @@ export default function App() {
       {/* Main area */}
       <div className="flex-1 relative overflow-hidden">
 
-        {/* Intro / non-3D pages */}
+        {/* Non-3D pages */}
         {activeScene === 'intro' && <Intro />}
+        {activeScene === 'crossref' && <CrossRefMatrix />}
+        {activeScene === 'journal' && <Journal />}
 
         {/* 3D Canvas — only rendered when a 3D scene is active */}
         {show3D && (
@@ -95,7 +100,6 @@ export default function App() {
               {activeScene === 'galaxy' && <ScriptureGalaxy />}
               {activeScene === 'graph' && <GraphExplorer />}
               {activeScene === 'words' && <WordConstellation />}
-              {activeScene === 'crossref' && <CrossRefMatrix />}
             </Canvas>
 
             <FilterPanel />
@@ -103,11 +107,13 @@ export default function App() {
             {selectedNodeId && (
               <div className="absolute top-0 right-0 bottom-10 w-64 bg-bg-panel/95 backdrop-blur-sm border-l border-white/10 z-20 overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 flex-shrink-0">
-                  <span className="text-[10px] text-gray-500 uppercase tracking-wider">Detail</span>
+                  <span className="text-[10px] text-gray-500 uppercase tracking-wider">
+                    {selectedNodeType === 'strongs' ? 'Word Detail' : selectedNodeType === 'theme' ? 'Theme' : 'Verse Detail'}
+                  </span>
                   <button onClick={() => selectNode(null, null)} className="text-gray-500 hover:text-white text-xs">✕</button>
                 </div>
                 <div className="flex-1 overflow-y-auto">
-                  <VerseDetailPanel />
+                  {selectedNodeType === 'strongs' ? <StrongsDetailPanel /> : <VerseDetailPanel />}
                 </div>
               </div>
             )}
