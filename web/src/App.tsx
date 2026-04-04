@@ -7,6 +7,7 @@ import { GraphExplorer } from '@/scenes/GraphExplorer';
 import { WordConstellation } from '@/scenes/WordConstellation';
 import { CrossRefMatrix } from '@/scenes/CrossRefMatrix';
 import { Journal } from '@/scenes/Journal';
+import { Research } from '@/scenes/Research';
 import { FilterPanel } from '@/panels/FilterPanel';
 import { VerseDetailPanel } from '@/panels/VerseDetailPanel';
 import { StrongsDetailPanel } from '@/panels/StrongsDetailPanel';
@@ -20,6 +21,7 @@ const NAV_SCENES: { id: SceneId; label: string }[] = [
   { id: 'graph', label: 'Knowledge Graph' },
   { id: 'words', label: 'Word Study' },
   { id: 'crossref', label: 'Cross-References' },
+  { id: 'research', label: 'Research' },
   { id: 'journal', label: 'Journal' },
 ];
 
@@ -86,6 +88,7 @@ export default function App() {
         {/* Non-3D pages */}
         {activeScene === 'intro' && <Intro />}
         {activeScene === 'crossref' && <CrossRefMatrix />}
+        {activeScene === 'research' && <Research />}
         {activeScene === 'journal' && <Journal />}
 
         {/* 3D Canvas — only rendered when a 3D scene is active */}
