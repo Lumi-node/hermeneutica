@@ -211,6 +211,10 @@ export function Intro() {
                 className="text-xs text-gray-500 hover:text-white transition">
                 GitHub
               </a>
+              <a href="https://hermeneutica-api.blueisland-113db368.canadacentral.azurecontainerapps.io/docs" target="_blank" rel="noopener noreferrer"
+                className="text-xs text-gray-500 hover:text-white transition">
+                API Docs
+              </a>
               <a href="https://www.automate-capture.com" target="_blank" rel="noopener noreferrer"
                 className="text-xs text-gray-500 hover:text-white transition">
                 automate-capture.com
