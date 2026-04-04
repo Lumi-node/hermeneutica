@@ -44,6 +44,13 @@ eval/benchmarks/
 *.png
 *.svg
 
+# Web app build artifacts
+web/node_modules/
+web/dist/
+web/public/data/*.bin
+web/public/data/*.json
+web/.vite/
+
 # OS
 .DS_Store
 Thumbs.db
