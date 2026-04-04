@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
 from etl.config import DB_NAME, DB_USER, DB_HOST, DB_PORT, DB_PASSWORD
 
 def main():
-    output_path = "/mnt/24TB_HDD/hermeneutica/web/public/data/book_matrix.json"
+    output_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "public", "data", "book_matrix.json")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     print("Computing book cross-reference matrix...")

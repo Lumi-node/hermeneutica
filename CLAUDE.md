@@ -51,7 +51,7 @@ hermeneutica/
 
 ## Database: `bible_research` (PostgreSQL 16 + pgvector)
 
-Connect: `sudo -u postgres psql -d bible_research` or via `etl/config.py` (postgres/postgres@localhost:5432).
+Connect: `sudo -u postgres psql -d bible_research` or via `etl/config.py` (uses DATABASE_URL env var).
 
 | Table Group | Tables | Rows |
 |-------------|--------|------|

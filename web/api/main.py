@@ -82,8 +82,8 @@ async def send_contact(req: ContactRequest):
             "https://api.resend.com/emails",
             headers={"Authorization": f"Bearer {api_key}"},
             json={
-                "from": "Hermeneutica <onboarding@resend.dev>",
-                "to": ["andrew@automate-capture.com"],
+                "from": "Hermeneutica <contact@hermeneutica.xyz>",
+                "to": [os.getenv("CONTACT_EMAIL", "andrew@automate-capture.com")],
                 "reply_to": email,
                 "subject": f"[Hermeneutica] Message from {name}",
                 "html": f"""

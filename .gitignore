@@ -35,6 +35,7 @@ training/logs/
 unsloth_compiled_cache/
 
 # Experiment raw results (large JSON)
+experiments/*.json
 experiments/*/results.json
 
 # Eval benchmark data

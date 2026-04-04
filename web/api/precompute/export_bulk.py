@@ -31,7 +31,7 @@ POS_TO_ID = {
     'pronoun': 4,
 }
 
-OUTPUT_DIR = Path("/mnt/24TB_HDD/hermeneutica/web/public/data")
+OUTPUT_DIR = Path(__file__).resolve().parent.parent.parent / "public" / "data"
 
 
 def get_db_connection():
