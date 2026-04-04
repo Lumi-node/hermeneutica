@@ -15,6 +15,10 @@ COPY api/ ./api/
 COPY public/data/ ./public/data/
 COPY __init__.py .
 
+# Copy journal data (experiments + research notes)
+COPY journal-data/experiments/ ./journal-data/experiments/
+COPY journal-data/notes/ ./journal-data/notes/
+
 # Port
 EXPOSE 8000
 

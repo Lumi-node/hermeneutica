@@ -11,9 +11,22 @@ from fastapi import APIRouter, HTTPException
 
 router = APIRouter(prefix="/journal", tags=["journal"])
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-EXPERIMENTS_DIR = PROJECT_ROOT / "experiments"
-NOTES_DIR = PROJECT_ROOT / "research" / "notes"
+# In container: /app/journal-data/  In local dev: ../../experiments/
+_API_DIR = Path(__file__).resolve().parent.parent  # web/api/
+_WEB_DIR = _API_DIR.parent                         # web/
+_PROJECT_ROOT = _WEB_DIR.parent                    # hermeneutica/
+
+# Try container path first, fall back to local dev path
+_CONTAINER_DATA = Path("/app/journal-data")
+if _CONTAINER_DATA.exists():
+    EXPERIMENTS_DIR = _CONTAINER_DATA / "experiments"
+    NOTES_DIR = _CONTAINER_DATA / "notes"
+elif (_WEB_DIR / "journal-data").exists():
+    EXPERIMENTS_DIR = _WEB_DIR / "journal-data" / "experiments"
+    NOTES_DIR = _WEB_DIR / "journal-data" / "notes"
+else:
+    EXPERIMENTS_DIR = _PROJECT_ROOT / "experiments"
+    NOTES_DIR = _PROJECT_ROOT / "research" / "notes"
 
 
 @router.get("/experiments")
