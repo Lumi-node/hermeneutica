@@ -47,7 +47,7 @@ export function Confessions() {
   const selectNode = useSceneStore(s => s.selectNode);
 
   useEffect(() => {
-    apiFetch<ConfessionSummary[]>('/confessions/')
+    apiFetch<ConfessionSummary[]>('/confessions')
       .then(setConfessions).catch(console.error).finally(() => setLoading(false));
   }, []);
 

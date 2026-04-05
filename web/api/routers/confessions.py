@@ -28,7 +28,7 @@ def _build_item_tree(item_row: dict, items_by_id: dict, proof_texts_by_item_id: 
     )
 
 
-@router.get("/", response_model=List[ConfessionSummary])
+@router.get("", response_model=List[ConfessionSummary])
 async def get_confessions():
     pool = await db.get_pool()
     query = """

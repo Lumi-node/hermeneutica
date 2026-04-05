@@ -23,7 +23,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Hermeneutica Explorer API",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    redirect_slashes=False,
 )
 
 # CORS middleware
