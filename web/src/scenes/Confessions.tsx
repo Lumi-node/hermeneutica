@@ -250,10 +250,13 @@ function DocumentItem({ item, depth, confessionType, onSelectItem, selectedItemI
   item: ConfessionItem; depth: number; confessionType: string;
   onSelectItem: (item: ConfessionItem) => void; selectedItemId: number | null;
 }) {
-  const isChapter = item.item_type === 'chapter';
+  const isHeading = item.item_type === 'chapter' || item.item_type === 'head';
   const isQuestion = item.item_type === 'question';
+  const isBody = item.item_type === 'section' || item.item_type === 'article';
   const isSelected = selectedItemId === item.id;
   const hasProofs = item.proof_texts.length > 0;
+
+  const headingLabel = item.item_type === 'head' ? 'Head' : item.item_type === 'chapter' ? 'Chapter' : '';
 
   return (
     <div className={depth > 0 ? 'ml-4' : 'mb-4'}>
@@ -261,11 +264,11 @@ function DocumentItem({ item, depth, confessionType, onSelectItem, selectedItemI
         onClick={() => onSelectItem(item)}
         className={`cursor-pointer rounded-lg transition p-3 ${
           isSelected ? 'bg-accent-blue/10 ring-1 ring-accent-blue/20' : 'hover:bg-white/3'
-        } ${isChapter ? 'mb-2' : 'mb-1'}`}
+        } ${isHeading ? 'mb-2' : 'mb-1'}`}
       >
-        {isChapter && (
+        {isHeading && (
           <h3 className="text-sm font-semibold text-white mb-1">
-            {confessionType !== 'catechism' && `Chapter ${item.item_number}: `}
+            {confessionType !== 'catechism' && headingLabel && `${headingLabel} ${item.item_number}: `}
             {item.title}
           </h3>
         )}
@@ -282,9 +285,11 @@ function DocumentItem({ item, depth, confessionType, onSelectItem, selectedItemI
           </div>
         )}
 
-        {item.item_type === 'section' && (
+        {isBody && (
           <div>
-            <span className="text-[10px] text-gray-500 font-medium mr-1">§{item.item_number}.</span>
+            <span className="text-[10px] text-gray-500 font-medium mr-1">
+              {item.item_type === 'article' ? `Art. ${item.item_number}.` : `§${item.item_number}.`}
+            </span>
             <span className="text-xs text-gray-300 leading-relaxed">
               {renderTextWithProofMarkers(item.answer_text || '', item.proof_texts)}
             </span>
