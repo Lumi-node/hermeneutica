@@ -191,3 +191,89 @@ async def get_confession_item(confession_id: int, item_id: int):
         proof_texts=proofs,
         children=[],
     )
+
+
+@router.get("/proof-analysis/{verse_id}")
+async def proof_text_analysis(verse_id: int, item_id: int = 0):
+    """Deep analysis of why a proof-text verse supports a doctrine."""
+    async with db.pool.acquire() as conn:
+        # Get the verse
+        verse = await conn.fetchrow("""
+            SELECT v.id, v.text, b.name as book_name, b.abbreviation, ch.chapter_number, v.verse_number
+            FROM verses v JOIN chapters ch ON ch.id = v.chapter_id JOIN books b ON b.id = ch.book_id
+            WHERE v.id = $1 AND v.translation_id = 1
+        """, verse_id)
+        if not verse:
+            raise HTTPException(status_code=404, detail="Verse not found")
+
+        # Get word-level data (from Hebrew/Greek source)
+        words = await conn.fetch("""
+            SELECT wa.word_position, wa.original_word, wa.transliteration, wa.english_gloss,
+                   wa.strongs_number, wa.morphology_code,
+                   se.root_definition, se.part_of_speech, se.language
+            FROM word_alignments wa
+            LEFT JOIN strongs_entries se ON se.strongs_number = wa.strongs_number
+            WHERE wa.verse_id IN (
+                SELECT v2.id FROM verses v2
+                JOIN chapters ch2 ON ch2.id = v2.chapter_id
+                JOIN chapters ch1 ON ch1.book_id = ch2.book_id AND ch1.chapter_number = ch2.chapter_number
+                JOIN verses v1 ON v1.chapter_id = ch1.id AND v1.verse_number = v2.verse_number
+                WHERE v1.id = $1
+            )
+            ORDER BY wa.word_position
+        """, verse_id)
+
+        # Cross-confession citations of this verse
+        cross_citations = await conn.fetch("""
+            SELECT c.abbreviation, c.name as confession_name, ci.item_type, ci.item_number,
+                   ci.title, LEFT(ci.answer_text, 120) as context
+            FROM confession_proof_texts cpt
+            JOIN confession_items ci ON ci.id = cpt.item_id
+            JOIN confessions c ON c.id = ci.confession_id
+            WHERE cpt.verse_id = $1
+            ORDER BY c.year, ci.sort_order
+        """, verse_id)
+
+        # Semantic similarity between this verse and the confession item (if item_id provided)
+        similarity = None
+        if item_id > 0:
+            sim_row = await conn.fetchrow("""
+                SELECT 1 - (ve.embedding <=> cie.embedding) as similarity
+                FROM verse_embeddings ve
+                JOIN confession_item_embeddings cie ON cie.confession_item_id = $2
+                WHERE ve.verse_id = $1 AND ve.model_name = 'Qwen/Qwen3-Embedding-8B'
+                  AND cie.model_name = 'Qwen/Qwen3-Embedding-8B'
+            """, verse_id, item_id)
+            if sim_row:
+                similarity = round(float(sim_row["similarity"]), 4)
+
+        return {
+            "verse_id": verse["id"],
+            "reference": f"{verse['book_name']} {verse['chapter_number']}:{verse['verse_number']}",
+            "text": verse["text"],
+            "words": [
+                {
+                    "position": w["word_position"],
+                    "original": w["original_word"],
+                    "transliteration": w["transliteration"],
+                    "gloss": w["english_gloss"],
+                    "strongs": w["strongs_number"],
+                    "definition": w["root_definition"],
+                    "part_of_speech": w["part_of_speech"],
+                    "language": w["language"],
+                }
+                for w in words
+            ],
+            "cross_citations": [
+                {
+                    "abbreviation": c["abbreviation"],
+                    "confession_name": c["confession_name"],
+                    "item_type": c["item_type"],
+                    "item_number": c["item_number"],
+                    "title": c["title"],
+                    "context": c["context"],
+                }
+                for c in cross_citations
+            ],
+            "semantic_similarity": similarity,
+        }

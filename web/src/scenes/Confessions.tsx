@@ -201,11 +201,10 @@ export function Confessions() {
       </div>
 
       {/* Right: Data panel */}
-      <div className="sm:w-72 flex-shrink-0 bg-bg-panel/80 border-l border-white/5 overflow-y-auto hidden sm:block">
+      <div className="sm:w-80 flex-shrink-0 bg-bg-panel/80 border-l border-white/5 overflow-y-auto hidden sm:block">
         <div className="p-3">
           {selectedItem ? (
             <div className="space-y-3">
-              {/* Item info */}
               <div>
                 <div className="text-[9px] text-gray-500 uppercase tracking-wider mb-1">Selected</div>
                 <div className="text-xs text-white font-medium">
@@ -214,47 +213,24 @@ export function Confessions() {
                 </div>
               </div>
 
-              {/* Proof texts */}
               {selectedItem.proof_texts.length > 0 && (
                 <div>
                   <div className="text-[9px] text-gray-500 uppercase tracking-wider mb-2">
                     Proof Texts ({selectedItem.proof_texts.length})
+                    <span className="text-gray-700 normal-case ml-1">— click to analyze</span>
                   </div>
-                  <div className="space-y-2">
-                    {groupProofs(selectedItem.proof_texts).map(([group, proofs]) => (
-                      <div key={group}>
-                        {group !== 'a' && <div className="text-[8px] text-gray-600 mb-0.5">Group {group}</div>}
-                        {proofs.map((pt, i) => (
-                          <div key={i} className="mb-2">
-                            <button
-                              onClick={() => pt.verse_id && jumpToVerse(pt.verse_id)}
-                              className={`text-[10px] font-medium mb-0.5 block ${pt.verse_id ? 'text-accent-blue hover:text-white cursor-pointer' : 'text-gray-400'}`}>
-                              {pt.book_name ? `${pt.book_name} ${pt.chapter_number}:${pt.verse_number}` : pt.osis_ref}
-                            </button>
-                            {pt.verse_text && (
-                              <p className="text-[10px] text-gray-500 leading-relaxed pl-2 border-l border-accent-gold/20">
-                                {pt.verse_text}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
+                  <ProofTextAccordion
+                    proofs={selectedItem.proof_texts}
+                    itemId={selectedItem.id}
+                    onJumpToVerse={jumpToVerse}
+                  />
                 </div>
               )}
-
-              {/* Cross-confession references (future) */}
-              <div className="border-t border-white/5 pt-2">
-                <div className="text-[9px] text-gray-600">
-                  Click a verse reference to jump to its location in the Scripture Galaxy
-                </div>
-              </div>
             </div>
           ) : (
             <div className="text-xs text-gray-600 py-4">
-              <p className="mb-2">Click a section or question in the document to see its proof texts here.</p>
-              <p>Proof texts link each doctrinal statement to the specific Bible verses that support it.</p>
+              <p className="mb-2">Click a section or question to see its proof texts.</p>
+              <p>Then click any verse to see <strong className="text-gray-400">why</strong> it supports the doctrine — word-level analysis, semantic similarity, and cross-confession citations.</p>
             </div>
           )}
         </div>
@@ -353,6 +329,172 @@ function getUniqueGroups(proofs: ProofText[]): string[] {
 }
 
 function renderTextWithProofMarkers(text: string, _proofs: ProofText[]): string {
-  // For now, return raw text — future: parse [a], [b] markers and make them interactive
   return text;
+}
+
+// Proof Text Accordion with deep analysis
+interface AnalysisData {
+  verse_id: number;
+  reference: string;
+  text: string;
+  words: { position: number; original: string; transliteration: string; gloss: string; strongs: string; definition: string | null; part_of_speech: string | null; language: string | null }[];
+  cross_citations: { abbreviation: string; confession_name: string; item_type: string; item_number: number; title: string | null; context: string | null }[];
+  semantic_similarity: number | null;
+}
+
+function ProofTextAccordion({ proofs, itemId, onJumpToVerse }: {
+  proofs: ProofText[]; itemId: number; onJumpToVerse: (id: number) => void;
+}) {
+  const [expandedVerse, setExpandedVerse] = useState<number | null>(null);
+  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
+
+  const toggleVerse = async (verseId: number | null) => {
+    if (!verseId || expandedVerse === verseId) {
+      setExpandedVerse(null);
+      setAnalysis(null);
+      return;
+    }
+    setExpandedVerse(verseId);
+    setLoadingAnalysis(true);
+    try {
+      const data = await apiFetch<AnalysisData>(`/confessions/proof-analysis/${verseId}`, { item_id: String(itemId) });
+      setAnalysis(data);
+    } catch { setAnalysis(null); }
+    setLoadingAnalysis(false);
+  };
+
+  const grouped = groupProofs(proofs);
+
+  return (
+    <div className="space-y-1">
+      {grouped.map(([group, groupProofs]) => (
+        <div key={group}>
+          {group !== 'a' && grouped.length > 1 && (
+            <div className="text-[8px] text-gray-600 mt-2 mb-0.5">Group {group}</div>
+          )}
+          {groupProofs.map((pt) => {
+            const isExpanded = expandedVerse === pt.verse_id;
+            return (
+              <div key={pt.verse_id ?? pt.osis_ref} className={`rounded-lg transition ${isExpanded ? 'bg-white/5 ring-1 ring-accent-gold/20' : ''}`}>
+                {/* Collapsed: reference + verse text */}
+                <button
+                  onClick={() => toggleVerse(pt.verse_id)}
+                  className="w-full text-left p-2 hover:bg-white/3 rounded-lg transition"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] text-gray-600">{isExpanded ? '▾' : '▸'}</span>
+                    <span className="text-[10px] font-medium text-accent-blue">
+                      {pt.book_name ? `${pt.book_name} ${pt.chapter_number}:${pt.verse_number}` : pt.osis_ref}
+                    </span>
+                  </div>
+                  {pt.verse_text && !isExpanded && (
+                    <p className="text-[9px] text-gray-600 mt-0.5 ml-4 line-clamp-1">{pt.verse_text}</p>
+                  )}
+                </button>
+
+                {/* Expanded: full analysis */}
+                {isExpanded && (
+                  <div className="px-2 pb-3 space-y-2.5">
+                    {/* Full verse text */}
+                    {pt.verse_text && (
+                      <p className="text-[10px] text-gray-300 leading-relaxed pl-2 border-l-2 border-accent-gold/30 italic">
+                        "{pt.verse_text}"
+                      </p>
+                    )}
+
+                    {loadingAnalysis && (
+                      <div className="flex items-center gap-2 text-[9px] text-gray-500">
+                        <div className="w-3 h-3 border border-accent-blue border-t-transparent rounded-full animate-spin" />
+                        Analyzing...
+                      </div>
+                    )}
+
+                    {analysis && analysis.verse_id === pt.verse_id && (
+                      <>
+                        {/* Semantic similarity */}
+                        {analysis.semantic_similarity !== null && (
+                          <div>
+                            <div className="text-[8px] text-gray-500 uppercase tracking-wider mb-1">Semantic Match</div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-accent-gold rounded-full" style={{ width: `${analysis.semantic_similarity * 100}%` }} />
+                              </div>
+                              <span className="text-[10px] text-accent-gold font-medium">{(analysis.semantic_similarity * 100).toFixed(0)}%</span>
+                            </div>
+                            <p className="text-[8px] text-gray-600 mt-0.5">
+                              Cosine similarity between verse meaning and doctrine statement
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Key words */}
+                        {analysis.words.length > 0 && (
+                          <div>
+                            <div className="text-[8px] text-gray-500 uppercase tracking-wider mb-1">
+                              Key Words ({analysis.words[0]?.language === 'heb' ? 'Hebrew' : 'Greek'})
+                            </div>
+                            <div className="space-y-1">
+                              {analysis.words.filter(w => w.definition).slice(0, 6).map((w) => (
+                                <div key={w.position} className="bg-white/3 rounded p-1.5">
+                                  <div className="flex items-baseline gap-1.5">
+                                    <span className="text-accent-gold text-[11px] font-mono">{w.original}</span>
+                                    <span className="text-[9px] text-gray-500">({w.transliteration})</span>
+                                    <span className="text-[9px] text-gray-400">"{w.gloss}"</span>
+                                  </div>
+                                  {w.strongs && <span className="text-[8px] text-gray-600">{w.strongs}</span>}
+                                  {w.definition && (
+                                    <p className="text-[8px] text-gray-500 mt-0.5 line-clamp-2">{w.definition}</p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cross-confession citations */}
+                        {analysis.cross_citations.length > 1 && (
+                          <div>
+                            <div className="text-[8px] text-gray-500 uppercase tracking-wider mb-1">
+                              Also Cited By ({analysis.cross_citations.length - 1} others)
+                            </div>
+                            <div className="space-y-1">
+                              {analysis.cross_citations
+                                .filter(c => !(c.item_type === 'question' && c.item_number === itemId))
+                                .slice(0, 5)
+                                .map((c, i) => (
+                                <div key={i} className="text-[9px]">
+                                  <span className="text-accent-blue font-medium">{c.abbreviation}</span>
+                                  <span className="text-gray-500 ml-1">
+                                    {c.item_type === 'question' ? `Q.${c.item_number}` : c.title || `§${c.item_number}`}
+                                  </span>
+                                  {c.context && (
+                                    <p className="text-[8px] text-gray-600 mt-0.5 line-clamp-1">{c.context}</p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-1">
+                      {pt.verse_id && (
+                        <button onClick={() => onJumpToVerse(pt.verse_id!)}
+                          className="text-[9px] text-accent-blue hover:text-white bg-accent-blue/10 px-2 py-1 rounded transition">
+                          View in Galaxy
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
 }
