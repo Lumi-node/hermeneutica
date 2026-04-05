@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import db
-from .routers import verses, graph, strongs, crossrefs, hermeneutics, search, explore, journal
+from .routers import verses, graph, strongs, crossrefs, hermeneutics, search, explore, journal, confessions
 
 
 @asynccontextmanager
@@ -50,6 +50,7 @@ app.include_router(hermeneutics.router, prefix="/api")
 app.include_router(search.router, prefix="/api")
 app.include_router(explore.router, prefix="/api")
 app.include_router(journal.router, prefix="/api")
+app.include_router(confessions.router, prefix="/api")
 
 
 @app.get("/api/health")

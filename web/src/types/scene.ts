@@ -1,4 +1,4 @@
-export type SceneId = 'intro' | 'galaxy' | 'graph' | 'words' | 'crossref' | 'research' | 'journal';
+export type SceneId = 'intro' | 'galaxy' | 'graph' | 'words' | 'crossref' | 'confessions' | 'research' | 'journal';
 
 export type ColorBy = 'book' | 'testament' | 'genre' | 'theme' | 'ethics';
 

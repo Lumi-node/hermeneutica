@@ -9,6 +9,7 @@ import { WordConstellation } from '@/scenes/WordConstellation';
 import { CrossRefMatrix } from '@/scenes/CrossRefMatrix';
 import { Journal } from '@/scenes/Journal';
 import { Research } from '@/scenes/Research';
+import { Confessions } from '@/scenes/Confessions';
 import { FilterPanel } from '@/panels/FilterPanel';
 import { VerseDetailPanel } from '@/panels/VerseDetailPanel';
 import { StrongsDetailPanel } from '@/panels/StrongsDetailPanel';
@@ -22,6 +23,7 @@ const NAV_SCENES: { id: SceneId; label: string; short: string }[] = [
   { id: 'graph', label: 'Knowledge Graph', short: 'Graph' },
   { id: 'words', label: 'Word Study', short: 'Words' },
   { id: 'crossref', label: 'Cross-References', short: 'Analytics' },
+  { id: 'confessions', label: 'Creeds & Confessions', short: 'Creeds' },
   { id: 'research', label: 'Research', short: 'Research' },
   { id: 'journal', label: 'Journal', short: 'Journal' },
 ];
@@ -118,6 +120,7 @@ export default function App() {
         {/* Non-3D pages */}
         {activeScene === 'intro' && <Intro />}
         {activeScene === 'crossref' && <CrossRefMatrix />}
+        {activeScene === 'confessions' && <Confessions />}
         {activeScene === 'research' && <Research />}
         {activeScene === 'journal' && <Journal />}
 
