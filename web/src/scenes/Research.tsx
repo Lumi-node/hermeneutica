@@ -5,11 +5,11 @@ export function Research() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-3xl mx-auto px-6 py-12 space-y-10">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-10">
 
         {/* Hero */}
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">Can Biblical Ethics Improve AI Alignment?</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Can Biblical Ethics Improve AI Alignment?</h1>
           <p className="text-sm text-gray-400 leading-relaxed">
             Hermeneutica is a research project exploring whether structured moral teachings from scripture
             can measurably improve a language model's ethical reasoning. This page documents the methodology,

@@ -6,12 +6,12 @@ export function Intro() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-3xl mx-auto px-6 py-12 space-y-10">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-10">
 
         {/* Hero */}
-        <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold text-accent-gold tracking-wide">Hermeneutica</h1>
-          <p className="text-lg text-gray-300">
+        <div className="text-center space-y-3 sm:space-y-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-accent-gold tracking-wide">Hermeneutica</h1>
+          <p className="text-base sm:text-lg text-gray-300">
             A 3D interactive explorer for the Bible's internal structure
           </p>
           <p className="text-sm text-gray-500 max-w-lg mx-auto">

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useSceneStore } from '@/stores/sceneStore';
 import { useUIStore } from '@/stores/uiStore';
@@ -16,35 +17,37 @@ import { ToolBar } from '@/panels/ToolBar';
 import { GalaxyLegend } from '@/panels/LegendPanel';
 import type { SceneId } from '@/types/scene';
 
-const NAV_SCENES: { id: SceneId; label: string }[] = [
-  { id: 'galaxy', label: 'Scripture Galaxy' },
-  { id: 'graph', label: 'Knowledge Graph' },
-  { id: 'words', label: 'Word Study' },
-  { id: 'crossref', label: 'Cross-References' },
-  { id: 'research', label: 'Research' },
-  { id: 'journal', label: 'Journal' },
+const NAV_SCENES: { id: SceneId; label: string; short: string }[] = [
+  { id: 'galaxy', label: 'Scripture Galaxy', short: 'Galaxy' },
+  { id: 'graph', label: 'Knowledge Graph', short: 'Graph' },
+  { id: 'words', label: 'Word Study', short: 'Words' },
+  { id: 'crossref', label: 'Cross-References', short: 'Analytics' },
+  { id: 'research', label: 'Research', short: 'Research' },
+  { id: 'journal', label: 'Journal', short: 'Journal' },
 ];
 
-// Scenes that use the 3D canvas
 const is3DScene = (s: SceneId) => ['galaxy', 'graph', 'words'].includes(s);
 
 export default function App() {
   const { activeScene, setActiveScene, selectedNodeId, selectedNodeType, selectNode } = useSceneStore();
   const { isLoading, loadingMessage, toggleSearchPanel, searchPanelOpen, toggleFilterPanel, filterPanelOpen } = useUIStore();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const show3D = is3DScene(activeScene);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-bg-primary text-white overflow-hidden">
       {/* Top bar */}
-      <header className="h-10 flex items-center px-3 bg-bg-secondary border-b border-white/5 flex-shrink-0 z-30">
+      <header className="h-10 flex items-center px-2 sm:px-3 bg-bg-secondary border-b border-white/5 flex-shrink-0 z-30">
         <button
           onClick={() => setActiveScene('intro')}
-          className="flex items-center gap-1 mr-4 hover:opacity-80 transition"
+          className="flex items-center gap-1 mr-2 sm:mr-4 hover:opacity-80 transition flex-shrink-0"
         >
           <span className="text-sm font-semibold tracking-wide text-accent-gold">Hermeneutica</span>
         </button>
-        <nav className="flex gap-0.5">
+
+        {/* Desktop nav */}
+        <nav className="hidden sm:flex gap-0.5">
           {NAV_SCENES.map(({ id, label }) => (
             <button
               key={id}
@@ -59,12 +62,21 @@ export default function App() {
             </button>
           ))}
         </nav>
+
+        {/* Mobile nav toggle */}
+        <button
+          className="sm:hidden text-gray-400 hover:text-white text-xs px-2 py-1 rounded bg-white/5"
+          onClick={() => setMobileNavOpen(!mobileNavOpen)}
+        >
+          {NAV_SCENES.find(s => s.id === activeScene)?.short ?? 'Menu'} ▾
+        </button>
+
         <div className="flex-1" />
         {show3D && (
-          <>
+          <div className="flex gap-1">
             <button
               onClick={toggleFilterPanel}
-              className={`text-[11px] px-2 py-1 rounded mr-1 transition ${
+              className={`text-[11px] px-2 py-1 rounded transition ${
                 filterPanelOpen ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white'
               }`}
             >
@@ -78,20 +90,38 @@ export default function App() {
             >
               Search
             </button>
-          </>
+          </div>
         )}
       </header>
 
+      {/* Mobile nav dropdown */}
+      {mobileNavOpen && (
+        <div className="sm:hidden bg-bg-secondary border-b border-white/5 z-30 px-2 py-1 flex flex-wrap gap-1">
+          {NAV_SCENES.map(({ id, short }) => (
+            <button
+              key={id}
+              onClick={() => { setActiveScene(id); setMobileNavOpen(false); }}
+              className={`text-[11px] px-3 py-1.5 rounded transition ${
+                activeScene === id
+                  ? 'bg-white/10 text-white'
+                  : 'text-gray-500 hover:text-gray-300 bg-white/5'
+              }`}
+            >
+              {short}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Main area */}
       <div className="flex-1 relative overflow-hidden">
-
         {/* Non-3D pages */}
         {activeScene === 'intro' && <Intro />}
         {activeScene === 'crossref' && <CrossRefMatrix />}
         {activeScene === 'research' && <Research />}
         {activeScene === 'journal' && <Journal />}
 
-        {/* 3D Canvas — only rendered when a 3D scene is active */}
+        {/* 3D Canvas */}
         {show3D && (
           <>
             <Canvas
@@ -105,15 +135,17 @@ export default function App() {
               {activeScene === 'words' && <WordConstellation />}
             </Canvas>
 
+            {/* Filter panel — hidden on mobile by default */}
             <FilterPanel />
 
+            {/* Detail panel — full width on mobile, side panel on desktop */}
             {selectedNodeId && (
-              <div className="absolute top-0 right-0 bottom-10 w-64 bg-bg-panel/95 backdrop-blur-sm border-l border-white/10 z-20 overflow-hidden flex flex-col">
+              <div className="absolute top-0 right-0 bottom-10 w-full sm:w-64 bg-bg-panel/95 backdrop-blur-sm border-l border-white/10 z-20 overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 flex-shrink-0">
                   <span className="text-[10px] text-gray-500 uppercase tracking-wider">
                     {selectedNodeType === 'strongs' ? 'Word Detail' : selectedNodeType === 'theme' ? 'Theme' : 'Verse Detail'}
                   </span>
-                  <button onClick={() => selectNode(null, null)} className="text-gray-500 hover:text-white text-xs">✕</button>
+                  <button onClick={() => selectNode(null, null)} className="text-gray-500 hover:text-white text-xs px-2 py-1 bg-white/5 rounded">✕ Close</button>
                 </div>
                 <div className="flex-1 overflow-y-auto">
                   {selectedNodeType === 'strongs' ? <StrongsDetailPanel /> : <VerseDetailPanel />}
@@ -134,8 +166,7 @@ export default function App() {
               </div>
             )}
 
-            {/* Attribution corner */}
-            <div className="absolute bottom-11 left-2 z-10 text-[9px] text-gray-700 hover:text-gray-500 transition">
+            <div className="absolute bottom-11 left-2 z-10 text-[9px] text-gray-700 hover:text-gray-500 transition hidden sm:block">
               <a href="https://www.automate-capture.com" target="_blank" rel="noopener noreferrer">
                 Made by Automate Capture, LLC
               </a>

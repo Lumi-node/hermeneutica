@@ -24,7 +24,7 @@ export function FilterPanel() {
   const isCrossRef = activeScene === 'crossref';
 
   return (
-    <div className="absolute top-0 left-0 bottom-10 w-44 bg-bg-panel/95 backdrop-blur-sm border-r border-white/10 overflow-y-auto z-20">
+    <div className="absolute top-0 left-0 bottom-10 w-full sm:w-44 bg-bg-panel/95 backdrop-blur-sm border-r border-white/10 overflow-y-auto z-20">
       <div className="p-3 space-y-4">
         {/* Scene label */}
         <div className="text-xs text-gray-600 uppercase tracking-widest font-medium border-b border-white/5 pb-2">

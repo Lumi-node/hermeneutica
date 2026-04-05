@@ -18,14 +18,14 @@ export function CrossRefMatrix() {
   return (
     <div className="h-full overflow-auto bg-bg-primary">
       {/* Tab bar */}
-      <div className="sticky top-0 bg-bg-secondary/95 backdrop-blur-sm border-b border-white/5 z-10 px-6 pt-4 pb-0">
-        <h1 className="text-lg font-semibold text-white mb-3">Biblical Analytics</h1>
-        <div className="flex gap-1">
+      <div className="sticky top-0 bg-bg-secondary/95 backdrop-blur-sm border-b border-white/5 z-10 px-3 sm:px-6 pt-3 sm:pt-4 pb-0">
+        <h1 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Biblical Analytics</h1>
+        <div className="flex gap-0.5 sm:gap-1 overflow-x-auto">
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`text-xs px-3 py-2 rounded-t transition border-b-2 ${
+              className={`text-[10px] sm:text-xs px-2 sm:px-3 py-1.5 sm:py-2 rounded-t transition border-b-2 whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab.id
                   ? 'bg-bg-panel text-white border-accent-blue'
                   : 'text-gray-500 hover:text-gray-300 border-transparent'
@@ -38,8 +38,8 @@ export function CrossRefMatrix() {
       </div>
 
       {/* Content */}
-      <div className="p-6">
-        <p className="text-xs text-gray-500 mb-4">{TABS.find(t => t.id === activeTab)?.desc}</p>
+      <div className="p-3 sm:p-6 overflow-x-auto">
+        <p className="text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4">{TABS.find(t => t.id === activeTab)?.desc}</p>
         {activeTab === 'crossrefs' && <CrossRefHeatmap />}
         {activeTab === 'topics' && <TopicHeatmap />}
         {activeTab === 'ethics' && <EthicsHeatmap />}
