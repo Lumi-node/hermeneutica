@@ -2,6 +2,7 @@ from typing import List, Dict, Optional, Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict
 from .. import db
+from ..embeddings import embed_query, format_pgvector, MODEL_NAME as PRINCIPLE_EMBED_MODEL
 import asyncio
 
 router = APIRouter(prefix="/explore")
@@ -346,20 +347,55 @@ async def _batch_fetch_labels(conn, node_ids: Dict[str, set]) -> Dict[str, str]:
 @router.get("/principles")
 async def principles(q: str, limit: int = 20) -> List[PrincipleResult]:
     """
-    Search distilled principles using trigram similarity and ILIKE fallback.
-    Returns ranked list of principles with metadata and ethics scores.
+    Semantic search over distilled moral principles.
+
+    Embeds the query with bge-small-en-v1.5 and ranks principles by cosine
+    similarity against pre-computed principle_embeddings (pgvector HNSW).
+    Falls back to trigram match if principle_embeddings is empty for the
+    configured model, so the endpoint still returns something on a fresh DB.
     """
-    query = """
-        SELECT 
+    # Embed the user query (CPU, ~20-40ms). Offloaded to a thread so the
+    # async event loop isn't blocked by ONNX inference.
+    try:
+        vec = await asyncio.to_thread(embed_query, q)
+        vec_str = format_pgvector(vec)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Embedding failed: {e}")
+
+    semantic_query = """
+        SELECT
             dp.id as principle_id,
             dp.principle_text,
             dp.principle_order,
+            pc.id as classification_id,
             b.name as book_name,
             ch.chapter_number,
             pc.genre,
             pc.themes,
             pc.teaching_type,
-            similarity(dp.principle_text, $1) as text_sim
+            1 - (pe.embedding <=> $1::vector) as sim
+        FROM principle_embeddings pe
+        JOIN distilled_principles dp ON dp.id = pe.principle_id
+        JOIN passage_classifications pc ON pc.id = dp.classification_id
+        JOIN chapters ch ON ch.id = pc.chapter_id
+        JOIN books b ON b.id = ch.book_id
+        WHERE pe.model_name = $2
+        ORDER BY pe.embedding <=> $1::vector
+        LIMIT $3
+    """
+
+    fallback_query = """
+        SELECT
+            dp.id as principle_id,
+            dp.principle_text,
+            dp.principle_order,
+            pc.id as classification_id,
+            b.name as book_name,
+            ch.chapter_number,
+            pc.genre,
+            pc.themes,
+            pc.teaching_type,
+            similarity(dp.principle_text, $1) as sim
         FROM distilled_principles dp
         JOIN passage_classifications pc ON pc.id = dp.classification_id
         JOIN chapters ch ON ch.id = pc.chapter_id
@@ -370,38 +406,37 @@ async def principles(q: str, limit: int = 20) -> List[PrincipleResult]:
     """
 
     async with db.pool.acquire() as conn:
-        rows = await conn.fetch(query, q, limit)
-        results = []
+        rows = await conn.fetch(semantic_query, vec_str, PRINCIPLE_EMBED_MODEL, limit)
 
-        # Collect classification_ids for batch ethics scores query
-        classification_ids = [row["principle_id"] for row in rows]  # Assuming dp.id maps to classification_id
+        # Fallback: if no embeddings exist for the configured model, use trigram
+        # search on the raw query text so the endpoint keeps working.
+        if not rows:
+            rows = await conn.fetch(fallback_query, q, limit)
+
+        # Batch fetch ethics scores by classification_id
+        classification_ids = [row["classification_id"] for row in rows]
+        ethics_map: Dict[int, Dict[str, float]] = {}
         if classification_ids:
             ethics_rows = await conn.fetch(
-                "SELECT classification_id, ethics_subset, relevance_score FROM passage_ethics_scores WHERE classification_id = ANY($1)",
-                classification_ids
+                "SELECT classification_id, ethics_subset, relevance_score "
+                "FROM passage_ethics_scores WHERE classification_id = ANY($1)",
+                classification_ids,
             )
-            ethics_map = {}
             for er in ethics_rows:
-                if er["classification_id"] not in ethics_map:
-                    ethics_map[er["classification_id"]] = {}
-                ethics_map[er["classification_id"]][er["ethics_subset"]] = er["relevance_score"]
-        else:
-            ethics_map = {}
+                ethics_map.setdefault(er["classification_id"], {})[er["ethics_subset"]] = er["relevance_score"]
 
+        results: List[PrincipleResult] = []
         for row in rows:
-            ethics_scores = ethics_map.get(row["principle_id"], {})
-            themes = parse_themes(row["themes"])
-
             results.append(PrincipleResult(
                 principle_id=row["principle_id"],
                 principle_text=row["principle_text"],
                 book_name=row["book_name"],
                 chapter_number=row["chapter_number"],
                 genre=row["genre"],
-                themes=themes,
+                themes=parse_themes(row["themes"]),
                 teaching_type=row["teaching_type"],
-                similarity=float(row["text_sim"]),
-                ethics_scores=ethics_scores
+                similarity=float(row["sim"]),
+                ethics_scores=ethics_map.get(row["classification_id"], {}),
             ))
 
         return results
