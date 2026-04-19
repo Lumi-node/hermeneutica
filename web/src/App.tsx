@@ -40,10 +40,10 @@ export default function App() {
   return (
     <div className="h-screen w-screen flex flex-col bg-bg-primary text-white overflow-hidden">
       {/* Top bar */}
-      <header className="h-10 flex items-center px-2 sm:px-3 bg-bg-secondary border-b border-white/5 flex-shrink-0 z-30">
+      <header className="h-12 sm:h-10 flex items-center px-2 sm:px-3 bg-bg-secondary border-b border-white/5 flex-shrink-0 z-30">
         <button
           onClick={() => setActiveScene('intro')}
-          className="flex items-center gap-1 mr-2 sm:mr-4 hover:opacity-80 transition flex-shrink-0"
+          className="flex items-center gap-1 mr-2 sm:mr-4 hover:opacity-80 transition flex-shrink-0 py-2 sm:py-0"
         >
           <span className="text-sm font-semibold tracking-wide text-accent-gold">Hermeneutica</span>
         </button>
@@ -67,7 +67,7 @@ export default function App() {
 
         {/* Mobile nav toggle */}
         <button
-          className="sm:hidden text-gray-400 hover:text-white text-xs px-2 py-1 rounded bg-white/5"
+          className="sm:hidden text-gray-200 hover:text-white text-sm px-3 py-2 rounded bg-white/5 min-h-[40px]"
           onClick={() => setMobileNavOpen(!mobileNavOpen)}
         >
           {NAV_SCENES.find(s => s.id === activeScene)?.short ?? 'Menu'} ▾
@@ -78,16 +78,16 @@ export default function App() {
           <div className="flex gap-1">
             <button
               onClick={toggleFilterPanel}
-              className={`text-[11px] px-2 py-1 rounded transition ${
-                filterPanelOpen ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white'
+              className={`text-sm sm:text-[11px] px-3 sm:px-2 py-2 sm:py-1 rounded transition min-h-[40px] sm:min-h-0 ${
+                filterPanelOpen ? 'bg-white/10 text-white' : 'text-gray-400 sm:text-gray-500 hover:text-white'
               }`}
             >
               Filters
             </button>
             <button
               onClick={toggleSearchPanel}
-              className={`text-[11px] px-2 py-1 rounded transition ${
-                searchPanelOpen ? 'bg-accent-blue/20 text-accent-blue' : 'text-gray-500 hover:text-white'
+              className={`text-sm sm:text-[11px] px-3 sm:px-2 py-2 sm:py-1 rounded transition min-h-[40px] sm:min-h-0 ${
+                searchPanelOpen ? 'bg-accent-blue/20 text-accent-blue' : 'text-gray-400 sm:text-gray-500 hover:text-white'
               }`}
             >
               Search
@@ -98,15 +98,15 @@ export default function App() {
 
       {/* Mobile nav dropdown */}
       {mobileNavOpen && (
-        <div className="sm:hidden bg-bg-secondary border-b border-white/5 z-30 px-2 py-1 flex flex-wrap gap-1">
+        <div className="sm:hidden bg-bg-secondary border-b border-white/5 z-30 px-2 py-2 flex flex-wrap gap-1.5">
           {NAV_SCENES.map(({ id, short }) => (
             <button
               key={id}
               onClick={() => { setActiveScene(id); setMobileNavOpen(false); }}
-              className={`text-[11px] px-3 py-1.5 rounded transition ${
+              className={`text-sm px-4 py-2.5 rounded transition min-h-[40px] ${
                 activeScene === id
                   ? 'bg-white/10 text-white'
-                  : 'text-gray-500 hover:text-gray-300 bg-white/5'
+                  : 'text-gray-300 hover:text-gray-100 bg-white/5'
               }`}
             >
               {short}
@@ -128,7 +128,7 @@ export default function App() {
         {show3D && (
           <>
             <Canvas
-              className="!absolute inset-0"
+              className="!absolute inset-0 touch-none"
               camera={{ position: [0, 0, 80], fov: 60 }}
               gl={{ antialias: true, alpha: false }}
               onCreated={({ gl }) => { gl.setClearColor('#0a0a0f'); }}
@@ -141,19 +141,36 @@ export default function App() {
             {/* Filter panel — hidden on mobile by default */}
             <FilterPanel />
 
-            {/* Detail panel — full width on mobile, side panel on desktop */}
+            {/* Detail panel — bottom sheet on mobile, side panel on desktop */}
             {selectedNodeId && (
-              <div className="absolute top-0 right-0 bottom-10 w-full sm:w-64 bg-bg-panel/95 backdrop-blur-sm border-l border-white/10 z-20 overflow-hidden flex flex-col">
-                <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 flex-shrink-0">
-                  <span className="text-[10px] text-gray-500 uppercase tracking-wider">
-                    {selectedNodeType === 'strongs' ? 'Word Detail' : selectedNodeType === 'theme' ? 'Theme' : 'Verse Detail'}
-                  </span>
-                  <button onClick={() => selectNode(null, null)} className="text-gray-500 hover:text-white text-xs px-2 py-1 bg-white/5 rounded">✕ Close</button>
+              <>
+                {/* Mobile backdrop */}
+                <div
+                  onClick={() => selectNode(null, null)}
+                  className="sm:hidden absolute inset-0 bg-black/60 z-20"
+                  aria-hidden="true"
+                />
+                <div className="absolute left-0 right-0 bottom-11 top-14 rounded-t-xl border-t border-white/10 sm:top-0 sm:bottom-10 sm:left-auto sm:right-0 sm:w-64 sm:rounded-none sm:border-t-0 sm:border-l bg-bg-panel/95 backdrop-blur-sm z-30 sm:z-20 overflow-hidden flex flex-col">
+                  {/* Mobile grab handle */}
+                  <div className="sm:hidden flex justify-center pt-2 pb-1 flex-shrink-0">
+                    <div className="h-1 w-10 rounded-full bg-white/20" />
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2 sm:py-2 border-b border-white/5 flex-shrink-0">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider">
+                      {selectedNodeType === 'strongs' ? 'Word Detail' : selectedNodeType === 'theme' ? 'Theme' : 'Verse Detail'}
+                    </span>
+                    <button
+                      onClick={() => selectNode(null, null)}
+                      className="text-gray-400 hover:text-white text-sm sm:text-xs px-3 sm:px-2 py-2 sm:py-1 bg-white/5 rounded min-h-[40px] sm:min-h-0"
+                    >
+                      ✕ Close
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto">
+                    {selectedNodeType === 'strongs' ? <StrongsDetailPanel /> : <VerseDetailPanel />}
+                  </div>
                 </div>
-                <div className="flex-1 overflow-y-auto">
-                  {selectedNodeType === 'strongs' ? <StrongsDetailPanel /> : <VerseDetailPanel />}
-                </div>
-              </div>
+              </>
             )}
 
             <GalaxyLegend />

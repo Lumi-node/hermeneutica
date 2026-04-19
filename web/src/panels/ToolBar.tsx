@@ -55,7 +55,7 @@ export function ToolBar() {
       )}
 
       {/* Tool tab bar */}
-      <div className="bg-bg-secondary border-t border-white/5 flex items-center px-1 sm:px-2 h-9 flex-shrink-0 overflow-x-auto">
+      <div className="bg-bg-secondary border-t border-white/5 flex items-center px-1 sm:px-2 h-11 sm:h-9 flex-shrink-0 overflow-x-auto">
         <span className="text-[10px] text-gray-600 mr-2 sm:mr-3 uppercase tracking-wider hidden sm:inline">Explore</span>
         {TOOLS.map((tool) => (
           <button
@@ -67,10 +67,10 @@ export function ToolBar() {
                 setActiveTool(tool.id);
               }
             }}
-            className={`text-[10px] sm:text-xs px-2 sm:px-3 py-1.5 rounded mr-0.5 sm:mr-1 transition whitespace-nowrap flex-shrink-0 ${
+            className={`text-xs sm:text-xs px-3 sm:px-3 py-2 sm:py-1.5 rounded mr-1 sm:mr-1 transition whitespace-nowrap flex-shrink-0 min-h-[36px] sm:min-h-0 ${
               activeTool === tool.id
                 ? 'bg-accent-blue/20 text-accent-blue'
-                : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                : 'text-gray-400 sm:text-gray-500 hover:text-gray-300 hover:bg-white/5'
             }`}
           >
             <span className="mr-1">{tool.icon}</span>

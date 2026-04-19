@@ -10,7 +10,10 @@ function rgbToHex(r: number, g: number, b: number): string {
 
 export function GalaxyLegend() {
   const { colorBy, activeScene } = useSceneStore();
-  const [open, setOpen] = useState(true);
+  // Default closed on mobile, open on desktop
+  const [open, setOpen] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 640 : true,
+  );
   const [pos, setPos] = useState({ x: 0, y: 0 }); // offset from default position
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);

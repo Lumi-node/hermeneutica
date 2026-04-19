@@ -108,25 +108,65 @@ export function InstancedPoints({
     }
   });
 
-  // Track mouse position without R3F events (no raycasting overhead)
+  // Track mouse position without R3F events (no raycasting overhead).
+  // On touch devices: first tap = preview (show hover label), second tap on same
+  // index within 1500ms = commit. Prevents accidental selections on dense dot clouds.
   useEffect(() => {
     const canvas = gl.domElement;
+    const lastTap = { idx: null as number | null, time: 0 };
+
     const onMove = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       _pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       _pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     };
-    const onClickCanvas = () => {
-      if (!onClick || lastHover.current === null) return;
-      onClick(lastHover.current);
+    const onPointerUp = (e: PointerEvent) => {
+      if (!onClick) return;
+      // Compute hover index synchronously on tap/click so we don't depend on
+      // the throttled useFrame loop having run between pointermove and up.
+      const rect = canvas.getBoundingClientRect();
+      const mx = ((_pointer.x + 1) / 2) * rect.width;
+      const my = ((1 - _pointer.y) / 2) * rect.height;
+      let bestDist = 28 * 28; // larger threshold for touch
+      let idx: number | null = null;
+      for (let i = 0; i < count; i++) {
+        if (visibilityMask && !visibilityMask[i]) continue;
+        _projected.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+        _projected.project(camera);
+        const sx = ((_projected.x + 1) / 2) * rect.width;
+        const sy = ((1 - _projected.y) / 2) * rect.height;
+        const dx = sx - mx, dy = sy - my;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < bestDist) { bestDist = d2; idx = i; }
+      }
+      if (idx === null) return;
+
+      if (e.pointerType === 'touch') {
+        const now = Date.now();
+        if (lastTap.idx === idx && now - lastTap.time < 1500) {
+          // Commit on second tap of same node
+          lastTap.idx = null;
+          lastTap.time = 0;
+          onClick(idx);
+        } else {
+          // First tap: show preview via hover
+          lastTap.idx = idx;
+          lastTap.time = now;
+          if (onHover) onHover(idx);
+          lastHover.current = idx;
+        }
+      } else {
+        // Mouse / pen: commit on first click
+        onClick(idx);
+      }
     };
     canvas.addEventListener('pointermove', onMove);
-    canvas.addEventListener('click', onClickCanvas);
+    canvas.addEventListener('pointerup', onPointerUp);
     return () => {
       canvas.removeEventListener('pointermove', onMove);
-      canvas.removeEventListener('click', onClickCanvas);
+      canvas.removeEventListener('pointerup', onPointerUp);
     };
-  }, [gl, onClick]);
+  }, [gl, onClick, onHover, count, visibilityMask, positions, camera]);
 
   // Cleanup
   useEffect(() => {

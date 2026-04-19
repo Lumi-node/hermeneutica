@@ -389,19 +389,21 @@ function HeatmapFrame({ canvasRef, size, yLabels, xLabels, footer }: {
   xLabels: string[];
   footer: string;
 }) {
+  // Wrapper caps at size px, scales down to fit narrow screens. Canvas keeps intrinsic
+  // resolution (set in useEffect), CSS scales it. Pixelated rendering stays crisp.
   return (
-    <div>
-      <div className="flex gap-1">
-        <div className="flex flex-col justify-between text-[8px] text-gray-500 py-0.5" style={{ height: size }}>
+    <div style={{ maxWidth: size, width: '100%' }}>
+      <div className="flex gap-1 items-stretch">
+        <div className="flex flex-col justify-between text-[8px] text-gray-500 py-0.5 flex-shrink-0 w-6">
           {yLabels.map(l => <span key={l}>{l}</span>)}
         </div>
         <canvas
           ref={canvasRef}
-          className="border border-white/5 rounded"
-          style={{ width: size, height: size, imageRendering: 'pixelated' }}
+          className="border border-white/5 rounded block flex-1 min-w-0"
+          style={{ aspectRatio: '1 / 1', height: 'auto', width: '100%', imageRendering: 'pixelated' }}
         />
       </div>
-      <div className="flex justify-between text-[8px] text-gray-500 mt-1 ml-8" style={{ width: size }}>
+      <div className="flex justify-between text-[8px] text-gray-500 mt-1 ml-7">
         {xLabels.map(l => <span key={l}>{l}</span>)}
       </div>
       <div className="text-[9px] text-gray-600 mt-3">{footer}</div>

@@ -147,8 +147,29 @@ export function Confessions() {
   return (
     <div className="h-full flex flex-col sm:flex-row bg-bg-primary overflow-hidden">
 
-      {/* Left: Confession nav */}
-      <div className="sm:w-40 flex-shrink-0 bg-bg-panel/80 border-r border-white/5 overflow-y-auto">
+      {/* Mobile: horizontal pill bar for confession nav */}
+      <div className="sm:hidden bg-bg-panel/80 border-b border-white/5 flex items-center gap-1 overflow-x-auto px-2 py-2 flex-shrink-0">
+        <button
+          onClick={() => setSelected(null)}
+          className="text-xs text-gray-300 hover:text-white px-3 py-1.5 rounded bg-white/5 min-h-[36px] whitespace-nowrap flex-shrink-0"
+        >
+          ←
+        </button>
+        {confessions.map(c => (
+          <button
+            key={c.id}
+            onClick={() => loadConfession(c.id)}
+            className={`text-xs px-3 py-1.5 rounded whitespace-nowrap flex-shrink-0 min-h-[36px] transition ${
+              selected.id === c.id ? 'bg-white/10 text-white' : 'text-gray-400 bg-white/5'
+            }`}
+          >
+            {c.abbreviation}
+          </button>
+        ))}
+      </div>
+
+      {/* Desktop: Left confession nav */}
+      <div className="hidden sm:block sm:w-40 flex-shrink-0 bg-bg-panel/80 border-r border-white/5 overflow-y-auto">
         <div className="p-2">
           <button onClick={() => setSelected(null)} className="text-[10px] text-gray-500 hover:text-white mb-2 block">← Back</button>
           {confessions.map(c => (
@@ -200,33 +221,14 @@ export function Confessions() {
         </div>
       </div>
 
-      {/* Right: Data panel */}
+      {/* Right: Data panel — desktop only */}
       <div className="sm:w-80 flex-shrink-0 bg-bg-panel/80 border-l border-white/5 overflow-y-auto hidden sm:block">
         <div className="p-3">
           {selectedItem ? (
-            <div className="space-y-3">
-              <div>
-                <div className="text-[9px] text-gray-500 uppercase tracking-wider mb-1">Selected</div>
-                <div className="text-xs text-white font-medium">
-                  {selectedItem.item_type === 'question' ? `Q. ${selectedItem.item_number}` :
-                   selectedItem.title || `§ ${selectedItem.item_number}`}
-                </div>
-              </div>
-
-              {selectedItem.proof_texts.length > 0 && (
-                <div>
-                  <div className="text-[9px] text-gray-500 uppercase tracking-wider mb-2">
-                    Proof Texts ({selectedItem.proof_texts.length})
-                    <span className="text-gray-700 normal-case ml-1">— click to analyze</span>
-                  </div>
-                  <ProofTextAccordion
-                    proofs={selectedItem.proof_texts}
-                    itemId={selectedItem.id}
-                    onJumpToVerse={jumpToVerse}
-                  />
-                </div>
-              )}
-            </div>
+            <ProofTextData
+              selectedItem={selectedItem}
+              jumpToVerse={jumpToVerse}
+            />
           ) : (
             <div className="text-xs text-gray-600 py-4">
               <p className="mb-2">Click a section or question to see its proof texts.</p>
@@ -236,9 +238,72 @@ export function Confessions() {
         </div>
       </div>
 
+      {/* Mobile proof-text bottom sheet */}
+      {selectedItem && (
+        <>
+          <div
+            onClick={() => setSelectedItem(null)}
+            className="sm:hidden fixed inset-0 bg-black/60 z-40"
+            aria-hidden="true"
+          />
+          <div className="sm:hidden fixed left-0 right-0 bottom-0 top-[30%] rounded-t-xl border-t border-white/10 bg-bg-panel/98 backdrop-blur-sm z-50 flex flex-col">
+            {/* Grab handle */}
+            <div className="flex justify-center pt-2 pb-1 flex-shrink-0">
+              <div className="h-1 w-10 rounded-full bg-white/20" />
+            </div>
+            <div className="flex items-center justify-between px-3 pb-2 border-b border-white/5 flex-shrink-0">
+              <span className="text-xs text-gray-400 uppercase tracking-wider">Proof Texts</span>
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="text-gray-400 hover:text-white text-sm px-3 py-1.5 rounded bg-white/5 min-h-[36px]"
+              >
+                Done
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              <ProofTextData
+                selectedItem={selectedItem}
+                jumpToVerse={jumpToVerse}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-bg-primary/80 z-40">
           <div className="w-6 h-6 border-2 border-accent-blue border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Shared content for both desktop right-panel and mobile bottom-sheet
+function ProofTextData({ selectedItem, jumpToVerse }: {
+  selectedItem: ConfessionItem; jumpToVerse: (id: number) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div>
+        <div className="text-[9px] text-gray-500 uppercase tracking-wider mb-1">Selected</div>
+        <div className="text-xs text-white font-medium">
+          {selectedItem.item_type === 'question' ? `Q. ${selectedItem.item_number}` :
+           selectedItem.title || `§ ${selectedItem.item_number}`}
+        </div>
+      </div>
+
+      {selectedItem.proof_texts.length > 0 && (
+        <div>
+          <div className="text-[9px] text-gray-500 uppercase tracking-wider mb-2">
+            Proof Texts ({selectedItem.proof_texts.length})
+            <span className="text-gray-700 normal-case ml-1">— tap to analyze</span>
+          </div>
+          <ProofTextAccordion
+            proofs={selectedItem.proof_texts}
+            itemId={selectedItem.id}
+            onJumpToVerse={jumpToVerse}
+          />
         </div>
       )}
     </div>

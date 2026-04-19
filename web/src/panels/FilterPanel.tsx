@@ -5,7 +5,7 @@ import { BOOKS, GENRES, EDGE_TYPES } from '@/lib/constants';
 import { CrossRefOverlayControls } from './CrossRefOverlay';
 
 export function FilterPanel() {
-  const { filterPanelOpen } = useUIStore();
+  const { filterPanelOpen, toggleFilterPanel } = useUIStore();
   const { activeScene, colorBy, sizeBy, setColorBy, setSizeBy, setOverlay, clearOverlay } = useSceneStore();
   const {
     testamentFilter, setTestamentFilter,
@@ -24,8 +24,30 @@ export function FilterPanel() {
   const isCrossRef = activeScene === 'crossref';
 
   return (
-    <div className="absolute top-0 left-0 bottom-10 w-full sm:w-44 bg-bg-panel/95 backdrop-blur-sm border-r border-white/10 overflow-y-auto z-20">
-      <div className="p-3 space-y-4">
+    <>
+      {/* Mobile backdrop */}
+      <div
+        onClick={toggleFilterPanel}
+        className="sm:hidden absolute inset-0 bg-black/50 z-20"
+        aria-hidden="true"
+      />
+      <div className="absolute left-0 right-0 bottom-11 top-auto max-h-[70vh] rounded-t-xl border-t border-white/10 sm:top-0 sm:right-auto sm:bottom-10 sm:w-44 sm:max-h-none sm:rounded-none sm:border-t-0 sm:border-r bg-bg-panel/95 backdrop-blur-sm overflow-y-auto z-30 sm:z-20">
+        {/* Mobile header with grab handle + close */}
+        <div className="sm:hidden sticky top-0 bg-bg-panel/95 backdrop-blur-sm border-b border-white/5 z-10">
+          <div className="flex justify-center pt-2 pb-1">
+            <div className="h-1 w-10 rounded-full bg-white/20" />
+          </div>
+          <div className="flex items-center justify-between px-3 pb-2">
+            <span className="text-xs text-gray-400 uppercase tracking-wider">Filters</span>
+            <button
+              onClick={toggleFilterPanel}
+              className="text-gray-400 hover:text-white text-sm px-3 py-1.5 rounded bg-white/5 min-h-[36px]"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+        <div className="p-3 space-y-4">
         {/* Scene label */}
         <div className="text-xs text-gray-600 uppercase tracking-widest font-medium border-b border-white/5 pb-2">
           {activeScene === 'galaxy' ? 'Galaxy' : activeScene === 'graph' ? 'Graph' : activeScene === 'words' ? 'Words' : 'Cross-Refs'} filters
@@ -145,8 +167,9 @@ export function FilterPanel() {
             </div>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -166,8 +189,8 @@ function TestamentToggle({ value, onChange }: { value: string; onChange: (v: 'al
         <button
           key={t}
           onClick={() => onChange(t)}
-          className={`text-xs px-3 py-1 rounded transition ${
-            value === t ? 'bg-accent-blue text-white' : 'bg-bg-secondary text-gray-400 hover:text-white'
+          className={`text-sm sm:text-xs px-4 sm:px-3 py-2 sm:py-1 rounded transition min-h-[40px] sm:min-h-0 ${
+            value === t ? 'bg-accent-blue text-white' : 'bg-bg-secondary text-gray-300 sm:text-gray-400 hover:text-white'
           }`}
         >
           {t === 'all' ? 'All' : t}
@@ -179,8 +202,8 @@ function TestamentToggle({ value, onChange }: { value: string; onChange: (v: 'al
 
 function Checkbox({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
-    <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-white">
-      <input type="checkbox" checked={checked} onChange={onChange} className="rounded border-gray-600" />
+    <label className="flex items-center gap-2 text-sm sm:text-xs text-gray-200 sm:text-gray-300 cursor-pointer hover:text-white py-1.5 sm:py-0 min-h-[36px] sm:min-h-0">
+      <input type="checkbox" checked={checked} onChange={onChange} className="rounded border-gray-600 w-4 h-4 sm:w-3 sm:h-3" />
       {label}
     </label>
   );
@@ -192,12 +215,12 @@ function BookFilter({ bookFilter, toggleBook, clearBookFilter }: {
   return (
     <Section title={`Books${bookFilter.length > 0 ? ` (${bookFilter.length})` : ''}`}>
       {bookFilter.length > 0 && (
-        <button onClick={clearBookFilter} className="text-[10px] text-accent-red hover:text-white mb-1">Clear</button>
+        <button onClick={clearBookFilter} className="text-xs sm:text-[10px] text-accent-red hover:text-white mb-1 py-1.5 sm:py-0">Clear</button>
       )}
-      <div className="max-h-40 overflow-y-auto space-y-0.5">
+      <div className="max-h-48 sm:max-h-40 overflow-y-auto grid grid-cols-2 sm:grid-cols-1 gap-x-2 gap-y-0.5">
         {BOOKS.map((b) => (
-          <label key={b.id} className="flex items-center gap-1.5 text-[10px] text-gray-400 cursor-pointer hover:text-white">
-            <input type="checkbox" checked={bookFilter.includes(b.id)} onChange={() => toggleBook(b.id)} className="rounded border-gray-600" />
+          <label key={b.id} className="flex items-center gap-2 sm:gap-1.5 text-xs sm:text-[10px] text-gray-300 sm:text-gray-400 cursor-pointer hover:text-white py-1 sm:py-0 min-h-[32px] sm:min-h-0">
+            <input type="checkbox" checked={bookFilter.includes(b.id)} onChange={() => toggleBook(b.id)} className="rounded border-gray-600 w-4 h-4 sm:w-3 sm:h-3" />
             {b.abbreviation}
           </label>
         ))}
