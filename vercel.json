@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd web && npm install && npm run build",
+  "outputDirectory": "web/dist",
+  "installCommand": "echo 'install runs in buildCommand'",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://hermeneutica-api.blueisland-113db368.canadacentral.azurecontainerapps.io/api/:path*" },
+    { "source": "/data/:path*", "destination": "https://hermeneutica-api.blueisland-113db368.canadacentral.azurecontainerapps.io/data/:path*" },
+    { "source": "/((?!api/|data/|assets/|.*\\..*).*)", "destination": "/index.html" }
+  ]
+}
