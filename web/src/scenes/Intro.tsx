@@ -200,7 +200,7 @@ export function Intro() {
             <div className="text-center sm:text-left">
               <p className="text-xs text-gray-500">
                 Made by{' '}
-                <a href="https://www.automate-capture.com" target="_blank" rel="noopener noreferrer"
+                <a href="https://automate-capture.co" target="_blank" rel="noopener noreferrer"
                   className="text-gray-400 hover:text-white transition underline underline-offset-2">
                   Automate Capture, LLC
                 </a>
@@ -215,9 +215,9 @@ export function Intro() {
                 className="text-xs text-gray-500 hover:text-white transition">
                 API Docs
               </a>
-              <a href="https://www.automate-capture.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://automate-capture.co" target="_blank" rel="noopener noreferrer"
                 className="text-xs text-gray-500 hover:text-white transition">
-                automate-capture.com
+                automate-capture.co
               </a>
               <a href="https://www.linkedin.com/in/andrew-young-executive" target="_blank" rel="noopener noreferrer"
                 className="text-xs text-gray-500 hover:text-white transition">

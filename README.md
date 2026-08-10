@@ -138,7 +138,7 @@ MIT License — see [LICENSE](LICENSE)
 
 ## Contact
 
-Made by [Automate Capture, LLC](https://www.automate-capture.com)
+Made by [Automate Capture, LLC](https://automate-capture.co)
 
-- Website: [automate-capture.com](https://www.automate-capture.com)
+- Website: [automate-capture.co](https://automate-capture.co)
 - LinkedIn: [Andrew Young](https://www.linkedin.com/in/andrew-young-executive)
